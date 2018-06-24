@@ -1,3 +1,5 @@
+![alt-text](homekit.jpg)
+
 **Enabling Homekit and Siri for Jablotron Alarms**
 In the beginning of 2017 I bought and installed a Jablotron JA-100 alarm system in my home, it was easy to install, works great and offers a lot of options for automation which is great since Ive automated 90% of the stuff I do in my house. However it was missing 1 feature, Homekit. Let’s fix that!
 
