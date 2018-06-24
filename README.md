@@ -199,3 +199,12 @@ Exit homebridge on the command line by pressing CTRL + Z, followed by executing 
 	sudo reboot
 
 The Pi will now reboot and after a couple of minutes it will be back online and Homebridge will be up and running.
+
+**Usage**
+Now that we have connected the Pi to Jablotron and our Homekit we can start to control Jablotron via Homekit but also automate it.
+
+The current setup of Jablotron as an Alarm System in Homekit requires user authentication when executing automations. For example when the first person arrives home, turn the alarm off. This will prompt a notification on your iOS device or watch asking if you want to execute this command.
+
+This works every time and has the added benefit of being more secure, alternatively it is possible to make the Jablotron alarm appear as a switch and then the automation will work without confirmation.
+
+If you want to use Siri for controlling the alarm, you need to create a scene, which switches the alarm on or off and then ask Siri to set that scene.
