@@ -38,6 +38,10 @@ In order to use Apple Homekit you need to make sure you meet Apple’s requireme
 - Use an existing Homebridge installation
 - Download the Homebridge for Raspberry Pi app which will do all the installation work for you https://itunes.apple.com/nl/app/homebridge-for-raspberrypi/id1123183713?mt=8
 
+**Future development**
+This is a first version which used Python for controlling the alarm, I'm currently working on a native node version but I'm still learning node and run into some request problems, if you like to contribute feel free to send me a message and I'll share the code.
+
+
 **Preparing the OS**
 For our OS we will be using Jessie Lite, get the latest version from:
 http://downloads.raspberrypi.org/raspbian_lite/images/
@@ -130,11 +134,11 @@ At this moment the packages still uses Python3 so we need to install pip by exec
 	pip3 install requests
 
 
-Installing Jablotron plugin
+**Installing Jablotron plugin**
 At this moment the package isn’t on npmjs so we will install it from Github by executing the following command:
 	npm install -g git+https://github.com/F4stFr3ddy/homebridge-jablotron-alarm.git
 
-Creating the homebridge config
+**Creating the homebridge config**
 On the command line and create the config file:
 	nano ~/.homebridge/config.json
 
