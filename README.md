@@ -172,15 +172,15 @@ Change the pincode to the corresponding pincode.
 
 To get the service id, we have to do a bit of work, first execute this command where you changed the login to your username and the password to your password, please not this is 1 command:
 
-    curl -i -s -k  -X $'POST' -H $'x-vendor-id: MyJABLOTRON' -H $'Content-Type:application/x-www-form-urlencoded' --data-binary $’login=YOUR_USERNAME&password=YOUR_PASSWORD’ $'https://api.jablonet.net/api/1.6/login.json'
+    curl -H 'x-vendor-id: MyJABLOTRON' --data "login=YOUR_USERNAME&password=YOUR_PASSWORD" --compressed 'https://api.jablonet.net/api/1.6/login.json'
 
 This will give back some info, locate the session_id, it looks like this:
 
     “session_id”:"lol808b3aahej01s7abc1a12f38"
 
-Copy the string of numbers and letters, and paste in the below command where it says SESSION_ID, after doing that execute the command
+Copy the alphanumeric string, and paste in the below command where it says SESSION_ID, after doing that execute the command
 
-    curl -i -s -k  -X $'POST' -H $'x-vendor-id: MyJABLOTRON' -H $'Content-Type: application/json' -H $'Content-Length: 66' -b $’PHPSESSID=SESSION_ID' --data-binary $'{\"visibility\":\"default\",\"list_type\":\"extended\",\"system\":\"Android\"}' $'https://api.jablonet.net/api/1.6/getServiceList.json'
+    curl -H 'x-vendor-id: MyJABLOTRON'  -H 'Cookie: PHPSESSID=SESSION_ID' --data-binary '{"list_type":"extended"}' --compressed 'https://api.jablonet.net/api/1.6/getServiceList.json'
 
 This will give a reply, locate the following:
 
