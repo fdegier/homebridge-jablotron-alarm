@@ -53,9 +53,9 @@ class Jablotron:
             segment_status = {}
 
             for segment in segments:
-                segment_status[segment['segment_name']] = segment['segment_state']
+                segment_status[segment['segment_key']] = segment['segment_state']
 
-            if segment_status["Normaal alarm"] == "unset":
+            if segment_status[self.segment] == "unset":
                 sys.stdout.write(str("DISARMED"))
                 sys.stdout.flush()
             else:
