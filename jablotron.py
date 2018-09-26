@@ -1,3 +1,4 @@
+import os
 import requests
 import sys
 
@@ -15,10 +16,11 @@ class Jablotron:
         }
 
     def update_cookie(self, cookie):
+        path = os.path.dirname(os.path.realpath(__file__))
         if cookie is None:
-            self.PHPSESSID = open("/home/pi/.npm-global/lib/node_modules/homebridge-jablotron/cookie.txt", 'r').readline()
+            self.PHPSESSID = open(path + "/cookie.txt", 'r').readline()
         else:
-            open("/home/pi/.npm-global/lib/node_modules/homebridge-jablotron/cookie.txt", 'w').writelines(str(cookie))
+            open(path + "/cookie.txt", 'w').writelines(str(cookie))
             self.PHPSESSID = cookie
         self.cookies = {
             'PHPSESSID': cookie
