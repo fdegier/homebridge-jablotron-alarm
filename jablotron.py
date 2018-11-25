@@ -10,6 +10,7 @@ class Jablotron(object):
         self.headers = {
             'x-vendor-id': 'MyJABLOTRON'
         }
+        self._is_armed = None
 
     def _execute_request(self, endpoint, payload, session_id):
         cookies = {
@@ -43,7 +44,15 @@ class Jablotron(object):
 
         r = self._execute_request('/controlSegment.json', data, self.fetch_session_id())
 
-        return len(r['segment_updates']) != 0
+        result = len(r['segment_updates']) != 0
+        
+        if result:
+            if state == 'set':
+                self._is_armed = True
+            if state == 'unset':
+                self._is_armed = False
+
+        return result
 
     def is_armed(self):
         payload = [
@@ -59,7 +68,9 @@ class Jablotron(object):
         for segment in segments:
             segment_status[segment['segment_key']] = segment['segment_state']
 
-        return segment_status[self.configuration.segment] != "unset"
+        self._is_armed = segment_status[self.configuration.segment] != "unset"
+
+        return self._is_armed
 
     def activate_alarm(self):
         return self._control_section(state="set")
@@ -68,9 +79,9 @@ class Jablotron(object):
         return self._control_section(state="unset")
 
 class JablotronCached(Jablotron):
-    def __init__(self, configuration):
+    def __init__(self, configuration, allow_caching_of_state):
         Jablotron.__init__(self, configuration)
-
+        self.allow_caching_of_state = allow_caching_of_state
         self.cache_filepath = os.path.dirname(os.path.realpath(__file__)) + '/cache.json'
         
         self._cache_data = self._load_cache()
@@ -81,6 +92,18 @@ class JablotronCached(Jablotron):
     def fetch_session_id(self):
         return self._cache_data['session_id']
 
+    def is_armed(self):
+        if not self.allow_caching_of_state or self._cache_data['is_armed'] is None:
+            self._cache_data['is_armed'] = super(JablotronCached, self).is_armed()
+            self._save_cache(self._cache_data)
+
+        return self._cache_data['is_armed']
+
+    def _control_section(self, state):
+        result = super(JablotronCached, self)._control_section(state)
+        self._cache_data['is_armed'] = self._is_armed
+        return result
+
     def _execute_request(self, endpoint, payload, session_id):
         try:
             return super(JablotronCached, self)._execute_request(endpoint, payload, session_id)
@@ -88,6 +111,7 @@ class JablotronCached(Jablotron):
             if ex.message == "not_logged_in":
                 self._invalidate_cache()
                 self._load_cache()
+                self._save_cache(self._cache_data)
 
                 return self._execute_request(endpoint, payload, session_id)
             
@@ -106,7 +130,8 @@ class JablotronCached(Jablotron):
                 return json.load(f)
 
         return {
-            'session_id': super(JablotronCached, self).fetch_session_id()
+            'session_id': super(JablotronCached, self).fetch_session_id(),
+            'is_armed': None
         }        
 
 class JablotronConfiguration:
@@ -137,7 +162,7 @@ class CliProcessor:
         sys.stdout.flush()
 
 cliProcessor = CliProcessor(sys.argv)
-jablotron = JablotronCached(cliProcessor.create_configuration())
+jablotron = JablotronCached(cliProcessor.create_configuration(), True)
 
 command = cliProcessor.get_command()
 
