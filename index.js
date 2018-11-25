@@ -12,38 +12,58 @@ function JablotronSecuritySystemAccessory(log, config) {
     this.pincode = config['pincode'];
     this.service_id = config['service_id'];
     this.segment = config['segment'];
+    this.jablotronPythonScriptPath = __dirname + "/jablotron.py";
 }
 
 JablotronSecuritySystemAccessory.prototype = {
 
-    setTargetState: function(state, callback) {
-        this.log("Setting state to %s", state);
-
-        var self = this;
-        var spawn = require("child_process").spawn;
-        self.log("Calling Python to set state");
-        var process = spawn('python3',["/home/pi/.npm-global/lib/node_modules/homebridge-jablotron/jablotron.py", state, this.username, this.password, this.pincode, this.service_id, this.segment]); //    Send the state to Python
+    logStream: function(stream) {
         var output = "";
 
-        process.stdout.on('data', function (data){
-            output += data;
+        stream.on('data', function (data){                                                     
+            output += data;                                                                            
+        });                                                                                            
+                                                                                                       
+        stream.on('end', function (data){                                                      
+            this.log(output);                                                                          
         });
+    },
 
-        process.stdout.on('end', function () {
-            self.log(output);
-        });
+    spawnPythonProcess: function(state)
+    {
+        this.log("Calling Python to set state: %s", state);
 
-        self.securityService.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
+        var spawn = require("child_process").spawn;
+        return spawn('python3',[jablotronPythonScriptPath, state, this.username, this.password, this.pincode, this.service_id, this.segment]);
+    },
+
+    getSecuritySystemState: function(stringState) {
+        const stateDictionary = {
+            'DISARMED': Characteristic.SecuritySystemCurrentState.DISARMED,
+            'AWAY_ARM': Characteristic.SecuritySystemCurrentState.AWAY_ARM,
+            'STAY_ARM': Characteristic.SecuritySystemCurrentState.STAY_ARM,
+            'NIGHT_ARM': Characteristic.SecuritySystemCurrentState.NIGHT_ARM
+        };
+
+        return stateDictionary[stringState];
+    },
+
+    setTargetState: function(state, callback) {
+        var process = this.spawnPythonProcess(state)
+        
+        logStream(process.stderr);
+        logStream(process.stdout);
+
+        this.securityService.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
         callback(null, state);
     },
 
     getState: function(callback) {
-        var self = this;
-
-        self.log("getting alarm state:");
-        var spawn = require("child_process").spawn;
-        self.log("Calling Python to get state");
-        var process = spawn('python3',["/home/pi/.npm-global/lib/node_modules/homebridge-jablotron/jablotron.py", "getState", this.username, this.password, this.pincode, this.service_id, this.segment]); //    Send the state to Python
+        var process = this.spawnPythonProcess('getState')
+        
+        logStream(process.stderr);
+        logStream(process.stdout);
+        
         var output = "";
 
         process.stdout.on('data', function (data){
@@ -51,17 +71,8 @@ JablotronSecuritySystemAccessory.prototype = {
         });
 
         process.stdout.on('end', function () {
-            self.log(output);
-            if (output == "DISARMED") {
-                var state = Characteristic.SecuritySystemCurrentState.DISARMED;
-            } else if (output == "AWAY_ARM") {
-                var state = Characteristic.SecuritySystemCurrentState.AWAY_ARM;
-            } else if (output == "STAY_ARM") {
-                var state = Characteristic.SecuritySystemCurrentState.STAY_ARM;
-            } else if (output == "NIGHT_ARM") {
-                var state = Characteristic.SecuritySystemCurrentState.NIGHT_ARM;
-            };
-            self.securityService.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
+            var state = getSecuritySystemState(output);
+            this.securityService.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
             callback(null, state);
         });
     },

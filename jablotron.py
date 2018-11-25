@@ -9,23 +9,13 @@ class Jablotron:
         self.code = sys.argv[4]
         self.service_id = sys.argv[5]
         self.segment = sys.argv[6]
-        self.update_cookie(cookie=None)
+        self._update_cookie(cookie=None)
+
+        self.api_url = 'https://api.jablonet.net/api/1.6'
 
         self.headers = {
             'x-vendor-id': 'MyJABLOTRON'
         }
-
-    def update_cookie(self, cookie):
-        path = os.path.dirname(os.path.realpath(__file__))
-        if cookie is None:
-            self.PHPSESSID = open(path + "/cookie.txt", 'r').readline()
-        else:
-            open(path + "/cookie.txt", 'w').writelines(str(cookie))
-            self.PHPSESSID = cookie
-        self.cookies = {
-            'PHPSESSID': cookie
-        }
-        return True
 
     def login(self):
         data = [
@@ -33,9 +23,9 @@ class Jablotron:
             ('password', self.password)
         ]
 
-        r = requests.post('https://api.jablonet.net/api/1.6/login.json', headers=self.headers, data=data).json()
+        r = requests.post(self.api_url + '/login.json', headers=self.headers, data=data).json()
         if str(r['status']) == "True":
-            self.update_cookie(r['session_id'])
+            self._update_cookie(r['session_id'])
             return True
         else:
             return False
@@ -46,8 +36,7 @@ class Jablotron:
              '[{"filter_data":[{"data_type":"section"}],"service_type":"ja100","service_id":' + self.service_id + ',"data_group":"serviceData","connect":true}]')
         ]
 
-        r = requests.post('https://api.jablonet.net/api/1.6/dataUpdate.json', cookies=self.cookies, headers=self.headers,
-                          data=payload).json()
+        r = requests.post(self.api_url + '/dataUpdate.json', cookies=self.cookies, headers=self.headers, data=payload).json()
         status = r['status']
 
         if str(status) == "True":
@@ -72,7 +61,19 @@ class Jablotron:
                 self.login()
                 self.get_status()
 
-    def control_section(self, section, state):
+    def _update_cookie(self, cookie):
+        path = os.path.dirname(os.path.realpath(__file__))
+        if cookie is None:
+            self.PHPSESSID = open(path + "/cookie.txt", 'r').readline()
+        else:
+            open(path + "/cookie.txt", 'w').writelines(str(cookie))
+            self.PHPSESSID = cookie
+        self.cookies = {
+            'PHPSESSID': cookie
+        }
+        return True
+
+    def _control_section(self, section, state):
         data = [
             ('service', 'ja100'),
             ('serviceId', self.service_id),
@@ -82,8 +83,7 @@ class Jablotron:
             ('control_code', self.code),
         ]
 
-        r = requests.post('https://api.jablonet.net/api/1.6/controlSegment.json', headers=self.headers, cookies=self.cookies,
-                          data=data).json()
+        r = requests.post(self.api_url + '/controlSegment.json', headers=self.headers, cookies=self.cookies, data=data).json()
         status = r['status']
         if str(status) == "True":
             if len(r['segment_updates']) == 0:
@@ -92,30 +92,24 @@ class Jablotron:
             error_code = r['error_status']
             if str(error_code) == "not_logged_in":
                 self.login()
-                self.control_section(section=section, state=state)
+                self._control_section(section=section, state=state)
 
         return True
 
     # These functions are for testing homebridge-script2
     def activate_alarm(self):
-        if self.control_section(section=None, state="set") is True:
+        if self._control_section(section=None, state="set") is True:
             return "ARMED" # away_arm
         else:
             return "DISARMED" # disarm
 
     def deactivate_alarm(self):
-        if self.control_section(section=None, state="unset") is True:
+        if self._control_section(section=None, state="unset") is True:
             print("DISARMED") # disarm
         else:
             print("ARMED") # away_arm
 
 state = sys.argv[1]
-
-actions = {"getState": "get_status",
-           "STAY_ARM (0)": None,
-           "NIGHT_ARM (2)": None,
-           "AWAY_ARM (1)": "activate_alarm",
-           "DISARM (3)": "deactivate_alarm"}
 
 jablotron = Jablotron()
 
