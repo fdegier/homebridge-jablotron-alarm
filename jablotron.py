@@ -81,6 +81,7 @@ class Jablotron(object):
 class JablotronCached(Jablotron):
     def __init__(self, configuration, allow_caching_of_state):
         Jablotron.__init__(self, configuration)
+        print allow_caching_of_state == True
         self.allow_caching_of_state = allow_caching_of_state
         self.cache_filepath = os.path.dirname(os.path.realpath(__file__)) + '/cache.json'
         
@@ -147,9 +148,13 @@ class CliProcessor:
     def __init__(self, argv):
         self.argv = argv
         self.command = argv[1]
+        self.allow_caching_of_state = argv[7]
 
     def get_command(self):
         return self.command
+
+    def is_caching_of_state_allowed(self):
+        return self.allow_caching_of_state.lower() == 'true'
 
     def create_configuration(self):
         return JablotronConfiguration(self.argv[2], self.argv[3], self.argv[4], self.argv[5], self.argv[6])
@@ -163,7 +168,7 @@ class CliProcessor:
         sys.stdout.flush()
 
 cliProcessor = CliProcessor(sys.argv)
-jablotron = JablotronCached(cliProcessor.create_configuration(), True)
+jablotron = JablotronCached(cliProcessor.create_configuration(), cliProcessor.is_caching_of_state_allowed())
 
 command = cliProcessor.get_command()
 
