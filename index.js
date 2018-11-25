@@ -20,13 +20,13 @@ JablotronSecuritySystemAccessory.prototype = {
 
     logStream: function(stream) {
         var output = "";
-
+        var self = this;
         stream.on('data', function (data){                                                     
             output += data;                                                                            
         });                                                                                            
                                                                                                        
         stream.on('end', function (data){                                                      
-            this.log(output);                                                                          
+            self.log(output);                                                                          
         });
     },
 
@@ -35,7 +35,7 @@ JablotronSecuritySystemAccessory.prototype = {
         this.log("Calling Python to set state: %s", state);
 
         var spawn = require("child_process").spawn;
-        return spawn('python3',[jablotronPythonScriptPath, state, this.username, this.password, this.pincode, this.service_id, this.segment, this.allow_caching_of_state]);
+        return spawn('python3',[this.jablotronPythonScriptPath, state, this.username, this.password, this.pincode, this.service_id, this.segment, this.allow_caching_of_state]);
     },
 
     getSecuritySystemState: function(stringState) {
@@ -52,8 +52,8 @@ JablotronSecuritySystemAccessory.prototype = {
     setTargetState: function(state, callback) {
         var process = this.spawnPythonProcess(state)
         
-        logStream(process.stderr);
-        logStream(process.stdout);
+        this.logStream(process.stderr);
+        this.logStream(process.stdout);
 
         this.securityService.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
         callback(null, state);
@@ -62,8 +62,10 @@ JablotronSecuritySystemAccessory.prototype = {
     getState: function(callback) {
         var process = this.spawnPythonProcess('getState')
         
-        logStream(process.stderr);
-        logStream(process.stdout);
+        var self = this;
+
+        this.logStream(process.stderr);
+        this.logStream(process.stdout);
         
         var output = "";
 
@@ -72,8 +74,8 @@ JablotronSecuritySystemAccessory.prototype = {
         });
 
         process.stdout.on('end', function () {
-            var state = getSecuritySystemState(output);
-            this.securityService.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
+            var state = self.getSecuritySystemState(output);
+            self.securityService.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
             callback(null, state);
         });
     },

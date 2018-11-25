@@ -20,7 +20,12 @@ class Jablotron(object):
         r = requests.post(self.api_url + endpoint, cookies=cookies, headers=self.headers, data=payload).json()
 
         if str(r['status']) != "True":
-            raise Exception(str(r['error_status']))
+            error = str(r['error_status'])
+            
+            if error == "not_logged_in":
+                raise NotLoggedInException(error)
+
+            raise Exception(error)
 
         return r
 
@@ -78,10 +83,13 @@ class Jablotron(object):
     def deactivate_alarm(self):
         return self._control_section(state="unset")
 
+class NotLoggedInException(Exception):
+    pass
+
 class JablotronCached(Jablotron):
     def __init__(self, configuration, allow_caching_of_state):
         Jablotron.__init__(self, configuration)
-        print allow_caching_of_state == True
+
         self.allow_caching_of_state = allow_caching_of_state
         self.cache_filepath = os.path.dirname(os.path.realpath(__file__)) + '/cache.json'
         
@@ -109,15 +117,12 @@ class JablotronCached(Jablotron):
     def _execute_request(self, endpoint, payload, session_id):
         try:
             return super(JablotronCached, self)._execute_request(endpoint, payload, session_id)
-        except Exception as ex:
-            if ex.message == "not_logged_in":
-                self._invalidate_cache()
-                self._load_cache()
-                self._save_cache(self._cache_data)
+        except NotLoggedInException:
+            self._invalidate_cache()
+            self._load_cache()
+            self._save_cache(self._cache_data)
 
-                return self._execute_request(endpoint, payload, session_id)
-            
-            raise
+            return self._execute_request(endpoint, payload, session_id)
 
     def _invalidate_cache(self):
         os.remove(self.cache_filepath)
