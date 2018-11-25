@@ -159,7 +159,7 @@ class CliProcessor:
         if is_armed:
             status = "ARMED"
 
-        print status
+        print(status)
         sys.stdout.flush()
 
 cliProcessor = CliProcessor(sys.argv)
