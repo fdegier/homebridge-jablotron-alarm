@@ -1,125 +1,188 @@
 import os
 import requests
 import sys
+import json
 
-class Jablotron:
-    def __init__(self):
-        self.user = sys.argv[2]
-        self.password = sys.argv[3]
-        self.code = sys.argv[4]
-        self.service_id = sys.argv[5]
-        self.segment = sys.argv[6]
-        self._update_cookie(cookie=None)
-
+class Jablotron(object):
+    def __init__(self, configuration):
+        self.configuration = configuration
         self.api_url = 'https://api.jablonet.net/api/1.6'
-
         self.headers = {
             'x-vendor-id': 'MyJABLOTRON'
         }
+        self._is_armed = None
 
-    def login(self):
-        data = [
-            ('login', self.user),
-            ('password', self.password)
-        ]
-
-        r = requests.post(self.api_url + '/login.json', headers=self.headers, data=data).json()
-        if str(r['status']) == "True":
-            self._update_cookie(r['session_id'])
-            return True
-        else:
-            return False
-
-    def get_status(self):
-        payload = [
-            ('data',
-             '[{"filter_data":[{"data_type":"section"}],"service_type":"ja100","service_id":' + self.service_id + ',"data_group":"serviceData","connect":true}]')
-        ]
-
-        r = requests.post(self.api_url + '/dataUpdate.json', cookies=self.cookies, headers=self.headers, data=payload).json()
-        status = r['status']
-
-        if str(status) == "True":
-            segments = r['data']['service_data'][0]['data'][0]['data']['segments']
-            segment_status = {}
-
-            for segment in segments:
-                segment_status[segment['segment_key']] = segment['segment_state']
-
-            if segment_status[self.segment] == "unset":
-                sys.stdout.write(str("DISARMED"))
-                sys.stdout.flush()
-            else:
-                sys.stdout.write(str("AWAY_ARM"))
-                sys.stdout.flush()
-
-            return True
-
-        else:
-            error_code = r['error_status']
-            if str(error_code) == "not_logged_in":
-                self.login()
-                self.get_status()
-
-    def _update_cookie(self, cookie):
-        path = os.path.dirname(os.path.realpath(__file__))
-        if cookie is None:
-            self.PHPSESSID = open(path + "/cookie.txt", 'r').readline()
-        else:
-            open(path + "/cookie.txt", 'w').writelines(str(cookie))
-            self.PHPSESSID = cookie
-        self.cookies = {
-            'PHPSESSID': cookie
+    def _execute_request(self, endpoint, payload, session_id):
+        cookies = {
+            'PHPSESSID': session_id
         }
-        return True
 
-    def _control_section(self, section, state):
+        r = requests.post(self.api_url + endpoint, cookies=cookies, headers=self.headers, data=payload).json()
+
+        if str(r['status']) != "True":
+            raise Exception(str(r['error_status']))
+
+        return r
+
+    def fetch_session_id(self):
+        data = [
+            ('login', self.configuration.user),
+            ('password', self.configuration.password)
+        ]
+        
+        return self._execute_request('/login.json', data, None)['session_id']
+
+    def _control_section(self, state):
         data = [
             ('service', 'ja100'),
-            ('serviceId', self.service_id),
+            ('serviceId', self.configuration.service_id),
             ('segmentId', 'STATE_1'),
-            ('segmentKey', self.segment),
+            ('segmentKey', self.configuration.segment),
             ('expected_status', state),
-            ('control_code', self.code),
+            ('control_code', self.configuration.code),
         ]
 
-        r = requests.post(self.api_url + '/controlSegment.json', headers=self.headers, cookies=self.cookies, data=data).json()
-        status = r['status']
-        if str(status) == "True":
-            if len(r['segment_updates']) == 0:
-                return False
-        else:
-            error_code = r['error_status']
-            if str(error_code) == "not_logged_in":
-                self.login()
-                self._control_section(section=section, state=state)
+        r = self._execute_request('/controlSegment.json', data, self.fetch_session_id())
 
-        return True
+        result = len(r['segment_updates']) != 0
+        
+        if result:
+            if state == 'set':
+                self._is_armed = True
+            if state == 'unset':
+                self._is_armed = False
 
-    # These functions are for testing homebridge-script2
+        return result
+
+    def is_armed(self):
+        payload = [
+            ('data',
+             '[{"filter_data":[{"data_type":"section"}],"service_type":"ja100","service_id":' + self.configuration.service_id + ',"data_group":"serviceData","connect":true}]')
+        ]
+
+        r = self._execute_request('/dataUpdate.json', payload, self.fetch_session_id())
+
+        segments = r['data']['service_data'][0]['data'][0]['data']['segments']
+        segment_status = {}
+
+        for segment in segments:
+            segment_status[segment['segment_key']] = segment['segment_state']
+
+        self._is_armed = segment_status[self.configuration.segment] != "unset"
+
+        return self._is_armed
+
     def activate_alarm(self):
-        if self._control_section(section=None, state="set") is True:
-            return "ARMED" # away_arm
-        else:
-            return "DISARMED" # disarm
+        return self._control_section(state="set")
 
     def deactivate_alarm(self):
-        if self._control_section(section=None, state="unset") is True:
-            print("DISARMED") # disarm
-        else:
-            print("ARMED") # away_arm
+        return self._control_section(state="unset")
 
-state = sys.argv[1]
+class JablotronCached(Jablotron):
+    def __init__(self, configuration, allow_caching_of_state):
+        Jablotron.__init__(self, configuration)
+        print allow_caching_of_state == True
+        self.allow_caching_of_state = allow_caching_of_state
+        self.cache_filepath = os.path.dirname(os.path.realpath(__file__)) + '/cache.json'
+        
+        self._cache_data = self._load_cache()
+        
+        if not os.path.exists(self.cache_filepath):
+            self._save_cache(self._cache_data)
 
-jablotron = Jablotron()
+    def fetch_session_id(self):
+        return self._cache_data['session_id']
 
-if state == "getState":
-    jablotron.get_status()
-elif state == "1": # away_arm
-    jablotron.activate_alarm()
-elif state == "3": # DISARM
-    jablotron.deactivate_alarm()
-elif state == "0": # stay_arm
-    jablotron.activate_alarm()
-elif state == "2": # night_arm
-    jablotron.activate_alarm()
+    def is_armed(self):
+        if not self.allow_caching_of_state or self._cache_data['is_armed'] is None:
+            self._cache_data['is_armed'] = super(JablotronCached, self).is_armed()
+            self._save_cache(self._cache_data)
+
+        return self._cache_data['is_armed']
+
+    def _control_section(self, state):
+        result = super(JablotronCached, self)._control_section(state)
+        self._cache_data['is_armed'] = self._is_armed
+        self._save_cache(self._cache_data)
+        return result
+
+    def _execute_request(self, endpoint, payload, session_id):
+        try:
+            return super(JablotronCached, self)._execute_request(endpoint, payload, session_id)
+        except Exception as ex:
+            if ex.message == "not_logged_in":
+                self._invalidate_cache()
+                self._load_cache()
+                self._save_cache(self._cache_data)
+
+                return self._execute_request(endpoint, payload, session_id)
+            
+            raise
+
+    def _invalidate_cache(self):
+        os.remove(self.cache_filepath)
+
+    def _save_cache(self, cache_data):
+        with open(self.cache_filepath, 'w') as outfile:
+            json.dump(cache_data, outfile)
+
+    def _load_cache(self):
+        if os.path.exists(self.cache_filepath):
+            with open(self.cache_filepath) as f:
+                return json.load(f)
+
+        return {
+            'session_id': super(JablotronCached, self).fetch_session_id(),
+            'is_armed': None
+        }        
+
+class JablotronConfiguration:
+    def __init__(self, user, password, code, service_id, segment):
+        self.user = user
+        self.password = password
+        self.code = code
+        self.service_id = service_id
+        self.segment = segment
+
+class CliProcessor:
+    def __init__(self, argv):
+        self.argv = argv
+        self.command = argv[1]
+        self.allow_caching_of_state = argv[7]
+
+    def get_command(self):
+        return self.command
+
+    def is_caching_of_state_allowed(self):
+        return self.allow_caching_of_state.lower() == 'true'
+
+    def create_configuration(self):
+        return JablotronConfiguration(self.argv[2], self.argv[3], self.argv[4], self.argv[5], self.argv[6])
+
+    def print_armed_status(self, is_armed):
+        status = "DISARMED"
+        if is_armed:
+            status = "ARMED"
+
+        print(status)
+        sys.stdout.flush()
+
+cliProcessor = CliProcessor(sys.argv)
+jablotron = JablotronCached(cliProcessor.create_configuration(), cliProcessor.is_caching_of_state_allowed())
+
+command = cliProcessor.get_command()
+
+action_map = {
+    "getState": jablotron.is_armed,
+    "3": jablotron.deactivate_alarm, # DISARM
+    "0": jablotron.activate_alarm, # stay_arm
+    "1": jablotron.activate_alarm, # away_arm
+    "2": jablotron.activate_alarm # night_arm
+}
+
+result = action_map[command]()
+
+if command == "3":
+    result = not result
+
+cliProcessor.print_armed_status(result)

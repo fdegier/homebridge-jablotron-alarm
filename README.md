@@ -159,7 +159,8 @@ If the config is empty, add the following to the file, otherwise proceed to chan
                 "password": "yourawesomepassword",
                 "pincode": "1234",
                 "service_id": "123456",
-                "segment": "section_1"
+                "segment": "section_1",
+				"allow_caching_of_state": false
             }
         ]
     }
@@ -189,6 +190,8 @@ This will give a reply, locate the following:
 Copy the value behind ‘id’ this is your service_id, if there are multiple, choose the one that you want to add to Homekit.
 
 Change the segment to the segment that you want to control. Usually this is ‘section_1’
+
+Change allow_caching_of_state to true in case you'll be switching alarm purely from through HomeKit. This settings will turn on caching of current status of alarm. Benefit can be extreme boost of performance (in some parts of world it takes seconds to resolve it), disbenefit is, that HomeKit will not be in sync in case you'll switch alarm in any other way than through HomeKit.
 
 **Connecting to Homekit**
 On the command line, execute:

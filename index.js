@@ -12,6 +12,7 @@ function JablotronSecuritySystemAccessory(log, config) {
     this.pincode = config['pincode'];
     this.service_id = config['service_id'];
     this.segment = config['segment'];
+    this.allow_caching_of_state = config['allow_caching_of_state']
     this.jablotronPythonScriptPath = __dirname + "/jablotron.py";
 }
 
@@ -34,7 +35,7 @@ JablotronSecuritySystemAccessory.prototype = {
         this.log("Calling Python to set state: %s", state);
 
         var spawn = require("child_process").spawn;
-        return spawn('python3',[jablotronPythonScriptPath, state, this.username, this.password, this.pincode, this.service_id, this.segment]);
+        return spawn('python3',[jablotronPythonScriptPath, state, this.username, this.password, this.pincode, this.service_id, this.segment, this.allow_caching_of_state]);
     },
 
     getSecuritySystemState: function(stringState) {
