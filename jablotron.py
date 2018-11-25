@@ -102,6 +102,7 @@ class JablotronCached(Jablotron):
     def _control_section(self, state):
         result = super(JablotronCached, self)._control_section(state)
         self._cache_data['is_armed'] = self._is_armed
+        self._save_cache(self._cache_data)
         return result
 
     def _execute_request(self, endpoint, payload, session_id):
