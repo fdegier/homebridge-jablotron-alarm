@@ -160,7 +160,7 @@ If the config is empty, add the following to the file, otherwise proceed to chan
                 "pincode": "1234",
                 "service_id": "123456",
                 "segment": "section_1",
-				"allow_caching_of_state": false
+                "allow_caching_of_state": false
             }
         ]
     }
