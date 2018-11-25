@@ -3,65 +3,33 @@ import requests
 import sys
 import json
 
-class Jablotron:
+class Jablotron(object):
     def __init__(self, configuration):
         self.configuration = configuration
-
-        self.cache_filepath = os.path.dirname(os.path.realpath(__file__)) + '/cache.json'
         self.api_url = 'https://api.jablonet.net/api/1.6'
         self.headers = {
             'x-vendor-id': 'MyJABLOTRON'
         }
 
-        self.cookies = None
-        self._cache_data = self._load_cache()
-
-        if not os.path.exists(self.cache_filepath):    
-            self._save_cache(self._cache_data)
-
-        self.cookies = {
-            'PHPSESSID': self._cache_data['session_id']
+    def _execute_request(self, endpoint, payload, session_id):
+        cookies = {
+            'PHPSESSID': session_id
         }
 
-    def _invalidate_cache(self):
-        os.remove(self.cache_filepath)
-
-    def _save_cache(self, cache_data):
-        with open(self.cache_filepath, 'w') as outfile:
-            json.dump(cache_data, outfile)
-
-    def _load_cache(self):
-        if os.path.exists(self.cache_filepath):
-            with open(self.cache_filepath) as f:
-                return json.load(f)
-
-        return {
-            'session_id': self._fetch_session_id()
-        }
-
-    def _execute_request(self, endpoint, payload):
-        r = requests.post(self.api_url + endpoint, cookies=self.cookies, headers=self.headers, data=payload).json()
+        r = requests.post(self.api_url + endpoint, cookies=cookies, headers=self.headers, data=payload).json()
 
         if str(r['status']) != "True":
-            error = str(r['error_status'])
-            
-            if error == "not_logged_in":
-                self._invalidate_cache()
-                self._load_cache()
-
-                return self._execute_request(endpoint, payload)
-            
-            raise Exception(error)
+            raise Exception(str(r['error_status']))
 
         return r
 
-    def _fetch_session_id(self):
+    def fetch_session_id(self):
         data = [
             ('login', self.configuration.user),
             ('password', self.configuration.password)
         ]
-
-        return self._execute_request('/login.json', data)['session_id']
+        
+        return self._execute_request('/login.json', data, None)['session_id']
 
     def _control_section(self, state):
         data = [
@@ -73,7 +41,7 @@ class Jablotron:
             ('control_code', self.configuration.code),
         ]
 
-        r = self._execute_request('/controlSegment.json', data)
+        r = self._execute_request('/controlSegment.json', data, self.fetch_session_id())
 
         return len(r['segment_updates']) != 0
 
@@ -83,7 +51,7 @@ class Jablotron:
              '[{"filter_data":[{"data_type":"section"}],"service_type":"ja100","service_id":' + self.configuration.service_id + ',"data_group":"serviceData","connect":true}]')
         ]
 
-        r = self._execute_request('/dataUpdate.json', payload)
+        r = self._execute_request('/dataUpdate.json', payload, self.fetch_session_id())
 
         segments = r['data']['service_data'][0]['data'][0]['data']['segments']
         segment_status = {}
@@ -98,6 +66,48 @@ class Jablotron:
 
     def deactivate_alarm(self):
         return self._control_section(state="unset")
+
+class JablotronCached(Jablotron):
+    def __init__(self, configuration):
+        Jablotron.__init__(self, configuration)
+
+        self.cache_filepath = os.path.dirname(os.path.realpath(__file__)) + '/cache.json'
+        
+        self._cache_data = self._load_cache()
+        
+        if not os.path.exists(self.cache_filepath):
+            self._save_cache(self._cache_data)
+
+    def fetch_session_id(self):
+        return self._cache_data['session_id']
+
+    def _execute_request(self, endpoint, payload, session_id):
+        try:
+            return super(JablotronCached, self)._execute_request(endpoint, payload, session_id)
+        except Exception as ex:
+            if ex.message == "not_logged_in":
+                self._invalidate_cache()
+                self._load_cache()
+
+                return self._execute_request(endpoint, payload, session_id)
+            
+            raise
+
+    def _invalidate_cache(self):
+        os.remove(self.cache_filepath)
+
+    def _save_cache(self, cache_data):
+        with open(self.cache_filepath, 'w') as outfile:
+            json.dump(cache_data, outfile)
+
+    def _load_cache(self):
+        if os.path.exists(self.cache_filepath):
+            with open(self.cache_filepath) as f:
+                return json.load(f)
+
+        return {
+            'session_id': super(JablotronCached, self).fetch_session_id()
+        }        
 
 class JablotronConfiguration:
     def __init__(self, user, password, code, service_id, segment):
@@ -127,7 +137,7 @@ class CliProcessor:
         sys.stdout.flush()
 
 cliProcessor = CliProcessor(sys.argv)
-jablotron = Jablotron(cliProcessor.create_configuration())
+jablotron = JablotronCached(cliProcessor.create_configuration())
 
 command = cliProcessor.get_command()
 
