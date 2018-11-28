@@ -39,7 +39,7 @@ In order to use Apple Homekit you need to make sure you meet Apple’s requireme
 - Download the Homebridge for Raspberry Pi app which will do all the installation work for you https://itunes.apple.com/nl/app/homebridge-for-raspberrypi/id1123183713?mt=8
 
 **Future development**
-This is a first version which used Python for controlling the alarm, I'm currently working on a native node version but I'm still learning node and run into some request problems, if you like to contribute feel free to send me a message and I'll share the code.
+If you like to contribute feel free to send me a message and I'll share the code.
 
 
 **Preparing the OS**
@@ -129,11 +129,6 @@ Add this line before the exit 0 line:
 
 Press CRTL + X to save and exit.
 
-At this moment the packages still uses Python3 so we need to install pip by executing:
-	sudo apt-get install python3-pip
-	pip3 install requests
-
-
 **Installing Jablotron plugin**
 At this moment the package isn’t on npmjs so we will install it from Github by executing the following command:
 	npm install -g git+https://github.com/F4stFr3ddy/homebridge-jablotron-alarm.git
@@ -159,8 +154,7 @@ If the config is empty, add the following to the file, otherwise proceed to chan
                 "password": "yourawesomepassword",
                 "pincode": "1234",
                 "service_id": "123456",
-                "segment": "section_1",
-                "allow_caching_of_state": false
+                "segment": "section_1"
             }
         ]
     }
@@ -190,8 +184,6 @@ This will give a reply, locate the following:
 Copy the value behind ‘id’ this is your service_id, if there are multiple, choose the one that you want to add to Homekit.
 
 Change the segment to the segment that you want to control. Usually this is ‘section_1’
-
-Change allow_caching_of_state to true in case you'll be switching alarm purely from through HomeKit. This settings will turn on caching of current status of alarm. Benefit can be extreme boost of performance (in some parts of world it takes seconds to resolve it), disbenefit is, that HomeKit will not be in sync in case you'll switch alarm in any other way than through HomeKit.
 
 **Connecting to Homekit**
 On the command line, execute:

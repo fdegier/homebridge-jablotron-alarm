@@ -1,3 +1,6 @@
+const Jablotron = require('./Jablotron');
+const JablotronClient = require('./Jablotron/jablotronClient.js');
+
 var Service, Characteristic;
 
 module.exports = function(homebridge){
@@ -7,77 +10,42 @@ module.exports = function(homebridge){
 }
 function JablotronSecuritySystemAccessory(log, config) {
     this.log = log;
-    this.username = config['username'];
-    this.password = config['password'];
-    this.pincode = config['pincode'];
-    this.service_id = config['service_id'];
-    this.segment = config['segment'];
-    this.allow_caching_of_state = config['allow_caching_of_state']
-    this.jablotronPythonScriptPath = __dirname + "/jablotron.py";
+    this.jablotron = new Jablotron(log, config, new JablotronClient(log));
 }
 
 JablotronSecuritySystemAccessory.prototype = {
 
-    logStream: function(stream) {
-        var output = "";
-        var self = this;
-        stream.on('data', function (data){                                                     
-            output += data;                                                                            
-        });                                                                                            
-                                                                                                       
-        stream.on('end', function (data){                                                      
-            self.log(output);                                                                          
-        });
-    },
-
-    spawnPythonProcess: function(state)
-    {
-        this.log("Calling Python to set state: %s", state);
-
-        var spawn = require("child_process").spawn;
-        return spawn('python3',[this.jablotronPythonScriptPath, state, this.username, this.password, this.pincode, this.service_id, this.segment, this.allow_caching_of_state]);
-    },
-
-    getSecuritySystemState: function(stringState) {
-        const stateDictionary = {
-            'DISARMED': Characteristic.SecuritySystemCurrentState.DISARMED,
-            'AWAY_ARM': Characteristic.SecuritySystemCurrentState.AWAY_ARM,
-            'STAY_ARM': Characteristic.SecuritySystemCurrentState.STAY_ARM,
-            'NIGHT_ARM': Characteristic.SecuritySystemCurrentState.NIGHT_ARM
-        };
-
-        return stateDictionary[stringState];
-    },
-
     setTargetState: function(state, callback) {
-        var process = this.spawnPythonProcess(state)
-        
-        this.logStream(process.stderr);
-        this.logStream(process.stdout);
+        this.log("Switching to state: " + state);
+        var self = this;
 
-        this.securityService.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
-        callback(null, state);
+        if (state == "3") {
+            this.jablotron.deactivateAlarm(function(didStateChanged) {
+                if (didStateChanged) {
+                    self.securityService.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
+                    callback(null, state);
+                }
+            })
+        }
+        else {
+            this.jablotron.activateAlarm(function(didStateChanged) {
+                if (didStateChanged) {
+                    self.securityService.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
+                    callback(null, state);
+                }
+            })
+        }
     },
 
     getState: function(callback) {
-        var process = this.spawnPythonProcess('getState')
-        
         var self = this;
+        this.jablotron.isAlarmActive(function(isAlarmActive){
+            self.log("Is alarm active? " + isAlarmActive);
 
-        this.logStream(process.stderr);
-        this.logStream(process.stdout);
-        
-        var output = "";
-
-        process.stdout.on('data', function (data){
-            output += data;
-        });
-
-        process.stdout.on('end', function () {
-            var state = self.getSecuritySystemState(output);
+            var state = isAlarmActive ? Characteristic.SecuritySystemCurrentState.AWAY_ARM : Characteristic.SecuritySystemCurrentState.DISARMED;
             self.securityService.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
             callback(null, state);
-        });
+        })
     },
 
     getCurrentState: function(callback) {
