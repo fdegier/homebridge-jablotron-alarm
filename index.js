@@ -1,3 +1,6 @@
+const Jablotron = require('./Jablotron');
+const JablotronClient = require('./Jablotron/jablotronClient.js');
+
 var Service, Characteristic;
 
 module.exports = function(homebridge){
@@ -7,63 +10,42 @@ module.exports = function(homebridge){
 }
 function JablotronSecuritySystemAccessory(log, config) {
     this.log = log;
-    this.username = config['username'];
-    this.password = config['password'];
-    this.pincode = config['pincode'];
-    this.service_id = config['service_id'];
-    this.segment = config['segment'];
+    this.jablotron = new Jablotron(log, config, new JablotronClient(log));
 }
 
 JablotronSecuritySystemAccessory.prototype = {
 
     setTargetState: function(state, callback) {
-        this.log("Setting state to %s", state);
-
+        this.log("Switching to state: " + state);
         var self = this;
-        var spawn = require("child_process").spawn;
-        self.log("Calling Python to set state");
-        var process = spawn('python3',["/home/pi/.npm-global/lib/node_modules/homebridge-jablotron/jablotron.py", state, this.username, this.password, this.pincode, this.service_id, this.segment]); //    Send the state to Python
-        var output = "";
 
-        process.stdout.on('data', function (data){
-            output += data;
-        });
-
-        process.stdout.on('end', function () {
-            self.log(output);
-        });
-
-        self.securityService.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
-        callback(null, state);
+        if (state == "3") {
+            this.jablotron.deactivateAlarm(function(didStateChanged) {
+                if (didStateChanged) {
+                    self.securityService.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
+                    callback(null, state);
+                }
+            })
+        }
+        else {
+            this.jablotron.activateAlarm(function(didStateChanged) {
+                if (didStateChanged) {
+                    self.securityService.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
+                    callback(null, state);
+                }
+            })
+        }
     },
 
     getState: function(callback) {
         var self = this;
+        this.jablotron.isAlarmActive(function(isAlarmActive){
+            self.log("Is alarm active? " + isAlarmActive);
 
-        self.log("getting alarm state:");
-        var spawn = require("child_process").spawn;
-        self.log("Calling Python to get state");
-        var process = spawn('python3',["/home/pi/.npm-global/lib/node_modules/homebridge-jablotron/jablotron.py", "getState", this.username, this.password, this.pincode, this.service_id, this.segment]); //    Send the state to Python
-        var output = "";
-
-        process.stdout.on('data', function (data){
-            output += data;
-        });
-
-        process.stdout.on('end', function () {
-            self.log(output);
-            if (output == "DISARMED") {
-                var state = Characteristic.SecuritySystemCurrentState.DISARMED;
-            } else if (output == "AWAY_ARM") {
-                var state = Characteristic.SecuritySystemCurrentState.AWAY_ARM;
-            } else if (output == "STAY_ARM") {
-                var state = Characteristic.SecuritySystemCurrentState.STAY_ARM;
-            } else if (output == "NIGHT_ARM") {
-                var state = Characteristic.SecuritySystemCurrentState.NIGHT_ARM;
-            };
+            var state = isAlarmActive ? Characteristic.SecuritySystemCurrentState.AWAY_ARM : Characteristic.SecuritySystemCurrentState.DISARMED;
             self.securityService.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
             callback(null, state);
-        });
+        })
     },
 
     getCurrentState: function(callback) {
