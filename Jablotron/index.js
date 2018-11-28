@@ -18,6 +18,27 @@ function Jablotron(log, config, jablotronClient) {
 
 Jablotron.prototype = {
 
+    fetchServiceId: function(callback) {
+        
+        var payload = { 'list_type': 'extended' };
+
+        var self = this;
+        this.fetchSessionId(function(sessionId) {
+            try { 
+                self.jablotronClient.doAuthenticatedRequest('/getServiceList.json', payload, sessionId, function(response) {
+                    var serviceId = response['services'][0]['id'];
+                    callback(serviceId);
+                });
+            } catch (error) {
+                if (error.message == 'not_logged_in') {
+                    this.log('Invalidating sessionId.');
+                    self.sessionId = null;
+                    self.fetchSessionId(callback);
+                }            
+            }
+        })
+    },
+
     fetchSessionId: function(callback) {
         if (this.sessionId != null) {
             this.log('Using cached sessionId.');
@@ -105,10 +126,10 @@ Jablotron.prototype = {
 
 }
 
-/*
+
 
 // Code for local testing without HomeBridge.
-
+/*
 var config = {
     'username': 'xxxxx',
     'password': 'xxxxx',
@@ -120,7 +141,7 @@ var config = {
 var j = new Jablotron(console.log, config, new JablotronClient(console.log));
 
 
-j.isAlarmActive(function(isAlarmActive){
+j.fetchServiceId(function(isAlarmActive){
     console.log(isAlarmActive);
 })
 
