@@ -167,21 +167,9 @@ Change the password to the corresponding password.
 
 Change the pincode to the corresponding pincode.
 
-To get the service id, we have to do a bit of work, first execute this command where you changed the login to your username and the password to your password, please not this is 1 command:
+To get the service id and segment, run the config_helper.py, this will get all services and related segments that are assigned to your account:
 
-    curl -H 'x-vendor-id: MyJABLOTRON' --data "login=YOUR_USERNAME&password=YOUR_PASSWORD" --compressed 'https://api.jablonet.net/api/1.6/login.json'
-
-This will give back some info, locate the session_id, it looks like this:
-
-    “session_id”:"lol808b3aahej01s7abc1a12f38"
-
-Copy the alphanumeric string, and paste in the below command where it says SESSION_ID, after doing that execute the command
-
-    curl -H 'x-vendor-id: MyJABLOTRON'  -H 'Cookie: PHPSESSID=SESSION_ID' --data-binary '{"list_type":"extended"}' --compressed 'https://api.jablonet.net/api/1.6/getServiceList.json'
-
-This will give a reply, locate the following:
-
-    {“services":[{"id":1234567,"name":"Your alarm”,"service_type":"JA100"
+    python3 config_helper.py username password
 
 Copy the value behind ‘id’ this is your service_id, if there are multiple, choose the one that you want to add to Homekit.
 
