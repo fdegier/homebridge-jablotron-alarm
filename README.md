@@ -131,10 +131,12 @@ Press CRTL + X to save and exit.
 
 **Installing Jablotron plugin**  
 At this moment the package isn’t on npmjs so we will install it from Github by executing the following command:
+	
 	npm install -g homebridge-jablotron
 
 **Creating the homebridge config**  
 On the command line and create the config file:
+	
 	nano ~/.homebridge/config.json
 
 If the config is empty, add the following to the file, otherwise proceed to changing the credentials:
