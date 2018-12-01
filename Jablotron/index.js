@@ -8,7 +8,7 @@ function Jablotron(log, config, jablotronClient) {
     this.username = config['username'];
     this.password = config['password'];
     this.pincode = config['pincode'];
-    this.service_id = config['service_id'];
+    this.serviceId = config['service_id'];
     this.segment = config['segment'];
     
     this.api_hostname = 'api.jablonet.net';
@@ -19,30 +19,34 @@ function Jablotron(log, config, jablotronClient) {
 Jablotron.prototype = {
 
     fetchServiceId: function(callback) {
-        
+        if (this.serviceId != null) {
+            this.log('Using cached serviceId.');
+            callback(this.serviceId);
+            return;
+        }
+
         var payload = { 'list_type': 'extended' };
 
+        this.log('Obtaining serviceId.');
         var self = this;
         this.fetchSessionId(function(sessionId) {
-            try { 
-                self.jablotronClient.doAuthenticatedRequest('/getServiceList.json', payload, sessionId, function(response) {
-                    var serviceId = response['services'][0]['id'];
-                    callback(serviceId);
-                });
-            } catch (error) {
-                if (error.message == 'not_logged_in') {
-                    this.log('Invalidating sessionId.');
-                    self.sessionId = null;
+            self.jablotronClient.doAuthenticatedRequest('/getServiceList.json', payload, sessionId, function(response) {
+                var serviceId = response['services'][0]['id'];
+                self.serviceId = serviceId;
+                callback(serviceId);
+            }, function(error){
+                if (self.tryHandleError(error)){
                     self.fetchSessionId(callback);
                 }            
-            }
+            });
         })
     },
 
     fetchSessionId: function(callback) {
         if (this.sessionId != null) {
             this.log('Using cached sessionId.');
-            return callback(this.sessionId);
+            callback(this.sessionId);
+            return;
         }
         
         var payload = {
@@ -60,13 +64,13 @@ Jablotron.prototype = {
     },
 
     isAlarmActive: function(callback) {
-        var payload = {
-            'data': '[{"filter_data":[{"data_type":"section"}],"service_type":"ja100","service_id":' + this.service_id + ',"data_group":"serviceData","connect":true}]'
-        };
-
         var self = this;
-        this.fetchSessionId(function(sessionId) {
-            try { 
+        this.fetchServiceId(function(serviceId) {
+            var payload = {
+                'data': '[{"filter_data":[{"data_type":"section"}],"service_type":"ja100","service_id":' + serviceId + ',"data_group":"serviceData","connect":true}]'
+            };
+
+            self.fetchSessionId(function(sessionId) {
                 self.jablotronClient.doAuthenticatedRequest('/dataUpdate.json', payload, sessionId, function(response) {
                     var segments = response['data']['service_data'][0]['data'][0]['data']['segments'];
                     var segment_status = {};
@@ -76,43 +80,38 @@ Jablotron.prototype = {
                     });
 
                     callback(segment_status[self.segment] != "unset");
+                }, function(error){
+                    if (self.tryHandleError(error)){
+                        self.isAlarmActive(callback);
+                    }            
                 });
-            } catch (error) {
-                if (error.message == 'not_logged_in') {
-                    this.log('Invalidating sessionId.');
-                    self.sessionId = null;
-                    self.isAlarmActive(callback);
-                }            
-            }
-        })
+            });
+        });
     },
 
     switchAlarmState: function(state, callback) {
-        var payload = {
-            'service': 'ja100',
-            'serviceId': this.service_id,
-            'segmentId': 'STATE_1',
-            'segmentKey': this.segment,
-            'expected_status': state,
-            'control_code': this.pincode,
-        }
-
         var self = this;
-        this.fetchSessionId(function(sessionId) {
-            try
-            {
+        this.fetchServiceId(function(serviceId) {
+            var payload = {
+                'service': 'ja100',
+                'serviceId': serviceId,
+                'segmentId': 'STATE_1',
+                'segmentKey': self.segment,
+                'expected_status': state,
+                'control_code': self.pincode,
+            }
+
+            self.fetchSessionId(function(sessionId) {
                 self.jablotronClient.doAuthenticatedRequest('/controlSegment.json', payload, sessionId, function(response) {
                     var isStateChanged = response['segment_updates'].length != 0;
-                    self.log('Was alarm state changed?' + isStateChanged);
+                    self.log('Was alarm state changed? ' + isStateChanged);
                     callback(isStateChanged);
+                }, function(error){
+                    if (self.tryHandleError(error)){
+                        self.switchAlarmState(callback);
+                    }
                 });
-            } catch (error) {
-                if (error.message == 'not_logged_in') {
-                    this.log('Invalidating sessionId.');
-                    self.sessionId = null;
-                    self.switchAlarmState(callback);
-                }            
-            }
+            });
         });
     },
 
@@ -122,8 +121,20 @@ Jablotron.prototype = {
 
     activateAlarm: function(callback) {
         this.switchAlarmState('set', callback);
-    }
+    },
 
+    tryHandleError: function(error){
+        if (error.message == 'not_logged_in') {
+            this.log('Invalidating sessionId.');
+            this.sessionId = null;
+            return true;
+        }
+        else {
+            this.log('Cannot handle error:');
+            this.log(error);
+            return false;
+        }
+    }
 }
 
 
@@ -138,13 +149,27 @@ var config = {
     'segment': 'xxxxx',
 };
 
+config = {
+    'username': 'vladimir.aubrecht@me.com',
+    'password': 'H9P-Dvo-fPo-H2C',
+    'pincode': '0342',
+    'service_id': '419859',
+    'segment': 'section_1',
+};
+
 var j = new Jablotron(console.log, config, new JablotronClient(console.log));
-
-
+*/
+/*
 j.fetchServiceId(function(isAlarmActive){
     console.log(isAlarmActive);
-})
+})*/
 
-j.deactivateAlarm(function(isStateChanged){
+/*
+j.isAlarmActive(function(isStateChanged){
     console.log(isStateChanged);
+})
+*/
+/*
+j.deactivateAlarm(function(result){
+    console.log(result);
 })*/

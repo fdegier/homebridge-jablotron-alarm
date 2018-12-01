@@ -11,6 +11,14 @@ module.exports = function(homebridge){
 function JablotronSecuritySystemAccessory(log, config) {
     this.log = log;
     this.jablotron = new Jablotron(log, config, new JablotronClient(log));
+    var self = this;
+
+    // Try to fetch alarm state every 15 minutes.
+    // When we fail, we invalidate sessionId and refetch new one into cache, this way we ensure, that sessionId is always valid when needed.
+    // Used for responsiveness as sessionId expires quickly and takes time to get new one.
+    setInterval(function(){
+        self.jablotron.isAlarmActive(() => {});
+      }, 900000);
 }
 
 JablotronSecuritySystemAccessory.prototype = {
@@ -38,6 +46,7 @@ JablotronSecuritySystemAccessory.prototype = {
     },
 
     getState: function(callback) {
+        this.log("Getting state of alarm ...");
         var self = this;
         this.jablotron.isAlarmActive(function(isAlarmActive){
             self.log("Is alarm active? " + isAlarmActive);

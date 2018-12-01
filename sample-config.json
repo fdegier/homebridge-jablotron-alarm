@@ -13,7 +13,7 @@
             "username": "your@email.com",
             "password": "yourawesomepassword",
             "pincode": "1234",
-            "service_id": "123456",
+            "service_id": null,
             "segment": "section_1"
         }
     ]
