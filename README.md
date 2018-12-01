@@ -1,6 +1,6 @@
 ![alt-text](homekit.jpg)
 
-**Enabling Homekit and Siri for Jablotron Alarms**  
+## Enabling Homekit and Siri for Jablotron Alarms
 In the beginning of 2017 I bought and installed a Jablotron JA-100 alarm system in my home, it was easy to install, works great and offers a lot of options for automation which is great since Ive automated 90% of the stuff I do in my house. However it was missing 1 feature, Homekit. Let’s fix that!
 
 If you are unfamiliar with Homekit, it’s Apple’s home automation integration, it basically bundles all of your smart devices in the Home app and lets you control it from 1 app, share access to family and friends, but most importantly provide a secure gateway for remote access and location based automation. See: https://www.apple.com/ios/home/
@@ -14,10 +14,10 @@ Control Jablotron with Siri
 
 Since we Homekit isn’t enabled on Jablotron we need a bridge to connect Jablotron to Homekit, we will be using Homebridge for this.
 
-**What is Homebridge?**  
+## What is Homebridge?
 Homebridge is a lightweight NodeJS server you can run on your home network that emulates the iOS HomeKit API. It supports Plugins, which are community-contributed modules that provide a basic bridge from HomeKit to various 3rd-party APIs provided by manufacturers of "smart home" devices. See: https://github.com/nfarina/homebridge
 
-**Components**  
+## Components
 Components used in this instructions:
 - Raspberry PI Zero W
 - Raspberry Pi Zero case
@@ -28,21 +28,20 @@ Components used in this instructions:
 
 The above components can be changed out to your liking, just make sure you check the compatibility with Homebridge.
 
-**Homekit dependencies**  
+## Homekit dependencies
 In order to use Apple Homekit you need to make sure you meet Apple’s requirements, most notably the requirements on automation and remote access. See: https://support.apple.com/en-us/HT207057
 
-**Installation options**  
+## Installation options
 - Following along this tutorial should be quite OK, but you have a few options to getting this up and running:
 - Follow along this tutorial
 - Contact us for a prepped SD card or a whole Pi with OS
 - Use an existing Homebridge installation
 - Download the Homebridge for Raspberry Pi app which will do all the installation work for you https://itunes.apple.com/nl/app/homebridge-for-raspberrypi/id1123183713?mt=8
 
-**Future development**  
+## Future development
 If you like to contribute feel free to send me a message and I'll share the code.
 
-
-**Preparing the OS**  
+## Preparing the OS
 For our OS we will be using Jessie Lite, get the latest version from:
 http://downloads.raspberrypi.org/raspbian_lite/images/
 
@@ -67,13 +66,13 @@ This will make sure that the Pi connects to your WiFi.
 
 Alternatively you can use the command line to perform these commands.
 
-**Prepping the Pi**  
+## Prepping the Pi
 Insert the SD with OS into the Pi, close the case and hook the power up. Verify that it works, by checking if the Pi’s light is blinking.
 
 Lets get started
 Now that we have all our components and software its time to boot up the Pi for the first time, installing the plugins and connecting it your Homekit. If you have downloaded the prepped OS then skip until the next steps and go straight to “Connecting to Homekit”, if you have an existing Homebridge installation skip to “Installing Jablotron plugin”
 
-**Connecting to the Pi**  
+## Connecting to the Pi
 After the Pi has booted, open the terminal on MacOs or use an SSH client such as putty on Windows. On MacOS connect via the terminal with the following command:
 
 	ssh pi@raspberrypi.local
@@ -82,7 +81,7 @@ The default password should be “raspberry”. After logging in the first thing
 
     passwd
 
-**Installing Homebridge and required packages**  
+## Installing Homebridge and required packages
 Allright installing Homebirdge can sometimes be a bit difficult, mostly due to different versions of Pi’s, OS’s, etc. So the following steps should help you to get it up and running but its best to check the latest installation guide on and preferably follow that guide: https://github.com/nfarina/homebridge/wiki/Running-HomeBridge-on-a-Raspberry-Pi
 
 Make sure you are connected to the Pi and execute the following commands one by one:
@@ -129,12 +128,12 @@ Add this line before the exit 0 line:
 
 Press CRTL + X to save and exit.
 
-**Installing Jablotron plugin**  
+## Installing Jablotron plugin
 At this moment the package isn’t on npmjs so we will install it from Github by executing the following command:
 	
 	npm install -g homebridge-jablotron
 
-**Creating the homebridge config**  
+## Creating the homebridge config
 On the command line and create the config file:
 	
 	nano ~/.homebridge/config.json
@@ -155,7 +154,7 @@ If the config is empty, add the following to the file, otherwise proceed to chan
                 "username": "your@email.com",
                 "password": "yourawesomepassword",
                 "pincode": "1234",
-                "service_id": "123456",
+                "service_id": null,
                 "segment": "section_1"
             }
         ]
@@ -167,15 +166,11 @@ Change the password to the corresponding password.
 
 Change the pincode to the corresponding pincode.
 
-To get the service id and segment, run the config_helper.py, this will get all services and related segments that are assigned to your account:
-
-    python3 config_helper.py username password
-
-Copy the value behind ‘id’ this is your service_id, if there are multiple, choose the one that you want to add to Homekit.
+Keep service id null if you have only one alarm, it will be autodected. Otherwise proceed with steps for [obtaining service Id](#Obtaning-service-Id).
 
 Change the segment to the segment that you want to control. Usually this is ‘section_1’
 
-**Connecting to Homekit**  
+## Connecting to Homekit
 On the command line, execute:
 
 	screen -S homebridge
@@ -189,7 +184,7 @@ Exit homebridge on the command line by pressing CTRL + Z, followed by executing 
 
 The Pi will now reboot and after a couple of minutes it will be back online and Homebridge will be up and running.
 
-**Usage**  
+## Usage
 Now that we have connected the Pi to Jablotron and our Homekit we can start to control Jablotron via Homekit but also automate it.
 
 The current setup of Jablotron as an Alarm System in Homekit requires user authentication when executing automations. For example when the first person arrives home, turn the alarm off. This will prompt a notification on your iOS device or watch asking if you want to execute this command.
@@ -197,3 +192,8 @@ The current setup of Jablotron as an Alarm System in Homekit requires user authe
 This works every time and has the added benefit of being more secure, alternatively it is possible to make the Jablotron alarm appear as a switch and then the automation will work without confirmation.
 
 If you want to use Siri for controlling the alarm, you need to create a scene, which switches the alarm on or off and then ask Siri to set that scene.
+
+## Obtaning service Id
+To get the service id and segment, run the config_helper.py, this will get all services and related segments that are assigned to your account:
+
+    python3 config_helper.py username password

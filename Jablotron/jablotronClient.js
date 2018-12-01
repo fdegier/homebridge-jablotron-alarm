@@ -9,7 +9,7 @@ function JablotronClient(log) {
 }
 
 JablotronClient.prototype = {
-    doAuthenticatedRequest: function(endpoint, payload, sessionId, callback) {
+    doAuthenticatedRequest: function(endpoint, payload, sessionId, successCallback, errorCallback) {
         var cookies = {
             'PHPSESSID': sessionId
         };
@@ -17,16 +17,18 @@ JablotronClient.prototype = {
         var self = this;
         this.doRequest(endpoint, payload, cookies, function(response) {
             if (response['status']) {
-                callback(response);    
+                successCallback(response);    
             }
             else {
                 self.log(response);
-                throw Error(response['error_status']);
+                errorCallback(new Error(response['error_status']))
             }
+        }, function(error){
+            errorCallback(error);
         });
     },
 
-    doRequest: function(endpoint, payload, cookies, callback) {
+    doRequest: function(endpoint, payload, cookies, successCallback, errorCallback) {
         var postData = querystring.stringify(payload);
         var cookiesData = querystring.stringify(cookies);
 
@@ -50,11 +52,12 @@ JablotronClient.prototype = {
             });
           
             resp.on('end', () => {
-                callback(JSON.parse(data));
+                successCallback(JSON.parse(data));
             });
           
           }).on("error", (err) => {
             this.log("Error: " + err.message);
+            errorCallback(err);
           });
 
         req.write(postData);
