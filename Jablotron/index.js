@@ -149,14 +149,6 @@ var config = {
     'segment': 'xxxxx',
 };
 
-config = {
-    'username': 'vladimir.aubrecht@me.com',
-    'password': 'H9P-Dvo-fPo-H2C',
-    'pincode': '0342',
-    'service_id': '419859',
-    'segment': 'section_1',
-};
-
 var j = new Jablotron(console.log, config, new JablotronClient(console.log));
 */
 /*
