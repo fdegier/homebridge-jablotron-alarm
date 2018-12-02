@@ -6,7 +6,7 @@ import sys
 
 def request(url, headers, params):
     req = urllib.request.Request(url, urllib.parse.urlencode(params).encode("utf-8"), headers)
-    response = urllib.request.urlopen(req).read()
+    response = urllib.request.urlopen(req).read().decode('utf-8')
     data = json.loads(response)
     return data
 
@@ -41,7 +41,7 @@ if r['status'] is True:
         req2 = urllib.request.Request('https://api.jablonet.net/api/1.6/getServiceList.json',
                                       urllib.parse.urlencode(params2).encode("utf-8"), headers2)
         req2.add_header('Cookie', 'PHPSESSID={}'.format(session_id))
-        response2 = urllib.request.urlopen(req2).read()
+        response2 = urllib.request.urlopen(req2).read().decode('utf-8')
         data2 = json.loads(response2)
         print("Found the following services:")
         for service in data2['services']:
@@ -61,7 +61,7 @@ if r['status'] is True:
             req3 = urllib.request.Request('https://api.jablonet.net/api/1.6/dataUpdate.json',
                                           urllib.parse.urlencode(params3).encode("utf-8"), headers3)
             req3.add_header('Cookie', 'PHPSESSID={}'.format(session_id))
-            response3 = urllib.request.urlopen(req3).read()
+            response3 = urllib.request.urlopen(req3).read().decode('utf-8')
             data3 = json.loads(response3)
             print("This alarm has the following segments: \n\n")
             segments = data3['data']['service_data'][0]['data'][0]['data']['segments']
