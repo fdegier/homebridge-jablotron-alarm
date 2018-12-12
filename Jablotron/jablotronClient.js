@@ -23,9 +23,7 @@ JablotronClient.prototype = {
                 self.log(response);
                 errorCallback(new Error(response['error_status']))
             }
-        }, function(error){
-            errorCallback(error);
-        });
+        }, errorCallback);
     },
 
     doRequest: function(endpoint, payload, cookies, successCallback, errorCallback) {
@@ -57,7 +55,10 @@ JablotronClient.prototype = {
           
           }).on("error", (err) => {
             this.log("Error: " + err.message);
-            errorCallback(err);
+
+            if (errorCallback != null) {
+                errorCallback(err);
+            }
           });
 
         req.write(postData);
