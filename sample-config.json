@@ -14,7 +14,9 @@
             "password": "yourawesomepassword",
             "pincode": "1234",
             "service_id": null,
-            "segment": "section_1"
+            "segment_id": "STATE_1",
+            // "keyboard_key": "keyboard_2_3",
+            "segment_key": "section_1"
         }
     ]
 }
