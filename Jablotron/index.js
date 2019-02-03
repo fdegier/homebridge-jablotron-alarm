@@ -17,7 +17,7 @@ function Jablotron(log, config, jablotronClient) {
     if (keyboard && keyboard != null) {
         this.keyboardKey = keyboard;
     }
-    
+
     this.sessionId = null;
 }
 
@@ -42,7 +42,7 @@ Jablotron.prototype = {
             }, function(error){
                 if (self.tryHandleError(error)){
                     self.fetchSessionId(callback);
-                }            
+                }
             });
         })
     },
@@ -53,7 +53,7 @@ Jablotron.prototype = {
             callback(this.sessionId);
             return;
         }
-        
+
         var payload = {
             'login': this.username,
             'password': this.password
@@ -68,11 +68,13 @@ Jablotron.prototype = {
         });
     },
 
-    isAlarmActive: function(callback) {
+    getSegmentState: function(type, callback) {
         var self = this;
+        var segmentType = type;
+
         this.fetchServiceId(function(serviceId) {
             var payload = {
-                'data': '[{"filter_data":[{"data_type":"section"}],"service_type":"ja100","service_id":' + serviceId + ',"data_group":"serviceData","connect":true}]'
+                'data': '[{"filter_data":[{"data_type":"' + segmentType + '"}],"service_type":"ja100","service_id":' + serviceId + ',"data_group":"serviceData","connect":true}]'
             };
 
             self.fetchSessionId(function(sessionId) {
@@ -84,71 +86,17 @@ Jablotron.prototype = {
                         segment_status[segment['segment_key']] = segment['segment_state'];
                     });
 
-                    callback(segment_status[self.segmentKey] != "unset");
-                }, function(error){
-                    if (self.tryHandleError(error)){
-                        self.isAlarmActive(callback);
-                    }            
-                });
-            });
-        });
-    },
-
-    getAlarmState: function(callback) {
-        var self = this;
-        this.fetchServiceId(function(serviceId) {
-            var payload = {
-                'data': '[{"filter_data":[{"data_type":"section"}],"service_type":"ja100","service_id":' + serviceId + ',"data_group":"serviceData","connect":true}]'
-            };
-
-            self.fetchSessionId(function(sessionId) {
-                self.jablotronClient.doAuthenticatedRequest('/dataUpdate.json', payload, sessionId, function(response) {
-                    var segments = response['data']['service_data'][0]['data'][0]['data']['segments'];
-                    var segment_status = {};
-
-                    segments.forEach((segment, index) => {
-                        segment_status[segment['segment_key']] = segment['segment_state'];
-                    });
-
-                    self.log("Segment status: " + self.segmentKey + " = " + segment_status[self.segmentKey]);
                     callback(segment_status[self.segmentKey]);
-                }, function(error){
-                    if (self.tryHandleError(error)){
-                        self.getAlarmState(callback);
+                }, function(error) {
+                    if (self.tryHandleError(error)) {
+                        self.getSegmentState(segmentType, callback);
                     }
                 });
             });
         });
     },
 
-    getSwitchState: function(callback) {
-        var self = this;
-        this.fetchServiceId(function(serviceId) {
-            var payload = {
-                'data': '[{"filter_data":[{"data_type":"pgm"}],"service_type":"ja100","service_id":' + serviceId + ',"data_group":"serviceData","connect":true}]'
-            };
-
-            self.fetchSessionId(function(sessionId) {
-                self.jablotronClient.doAuthenticatedRequest('/dataUpdate.json', payload, sessionId, function(response) {
-                    var segments = response['data']['service_data'][0]['data'][0]['data']['segments'];
-                    var segment_status = {};
-
-                    segments.forEach((segment, index) => {
-                        segment_status[segment['segment_key']] = segment['segment_state'];
-                });
-
-                    self.log("Switch status: " + self.segmentKey + " = " + segment_status[self.segmentKey]);
-                    callback(segment_status[self.segmentKey]);
-                }, function(error){
-                    if (self.tryHandleError(error)){
-                        self.getAlarmState(callback);
-                    }
-                });
-            });
-        });
-    },
-
-    switchAlarmState: function(state, callback) {
+    switchSegmentState: function(state, callback) {
         var self = this;
         this.fetchServiceId(function(serviceId) {
             var keyboardOrSegmentKey = self.segmentKey;
@@ -181,16 +129,16 @@ Jablotron.prototype = {
         });
     },
 
-    deactivateAlarm: function(callback) {
-        this.switchAlarmState('unset', callback);
+    deactivateSegment: function(callback) {
+        this.switchSegmentState('unset', callback);
     },
 
-    activateAlarm: function(callback) {
-        this.switchAlarmState('set', callback);
+    activateSegment: function(callback) {
+        this.switchSegmentState('set', callback);
     },
 
-    partialActivateAlarm: function(callback) {
-        this.switchAlarmState('partialSet', callback);
+    partiallyActivateSegment: function(callback) {
+        this.switchSegmentState('partialSet', callback);
     },
 
     tryHandleError: function(error){
@@ -206,32 +154,3 @@ Jablotron.prototype = {
         }
     }
 }
-
-
-
-// Code for local testing without HomeBridge.
-/*
-var config = {
-    'username': 'xxxxx',
-    'password': 'xxxxx',
-    'pincode': 'xxxx',
-    'service_id': 'xxxxx',
-    'segment': 'xxxxx',
-};
-
-var j = new Jablotron(console.log, config, new JablotronClient(console.log));
-*/
-/*
-j.fetchServiceId(function(isAlarmActive){
-    console.log(isAlarmActive);
-})*/
-
-/*
-j.isAlarmActive(function(isStateChanged){
-    console.log(isStateChanged);
-})
-*/
-/*
-j.deactivateAlarm(function(result){
-    console.log(result);
-})*/

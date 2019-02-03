@@ -13,42 +13,56 @@ function JablotronSecuritySystemAccessory(log, config) {
     this.log = log;
     this.jablotron = new Jablotron(log, config, new JablotronClient(log));
     this.name = config['name'];
+    this.partialSetMapping = Characteristic.SecuritySystemCurrentState.STAY_ARM;
+
+    var partSet = config['partial_set_mapping'];
+    if (partSet) {
+        this.partialSetMapping = (partSet == "HOME" ? Characteristic.SecuritySystemCurrentState.STAY_ARM : Characteristic.SecuritySystemCurrentState.NIGHT_ARM);
+    }
 
     var accType = config['type'];
     if (accType) {
         this.type = accType;
     } else {
-        this.type = 'alarm';
+        this.type = "alarm";
     }
 
     var self = this;
-    setInterval(function(){
-        self.jablotron.isAlarmActive(() => {});
-      }, 900000);
+    setInterval(function() {
+        self.jablotron.getSegmentState(self.getSegmentType(),() => {});
+    }, 900000);
 }
 
 JablotronSecuritySystemAccessory.prototype = {
+
+    getSegmentType: function() {
+        if (this.type == "alarm") {
+            return "section";
+        }
+
+        return "pgm";
+    },
 
     setTargetAlarmState: function(state, callback) {
         this.log("Setting alarm state: " + state);
         var self = this;
 
-        if (state == "3" || state == "0") {
-            this.jablotron.deactivateAlarm(function(didStateChanged) {
+        if (state == "3") {
+            this.jablotron.deactivateSegment(function(didStateChanged) {
                 if (didStateChanged) {
                     self.service.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
                     callback(null, state);
                 }
             })
-        } else if (state == "2") {
-            this.jablotron.partialActivateAlarm(function(didStateChanged) {
-            if (didStateChanged) {
-                self.service.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
-                callback(null, state);
-            }
-        })
+        } else if (state == "2" || state == "0") {
+            this.jablotron.partiallyActivateSegment(function(didStateChanged) {
+                if (didStateChanged) {
+                    self.service.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
+                    callback(null, state);
+                }
+            })
         } else {
-            this.jablotron.activateAlarm(function(didStateChanged) {
+            this.jablotron.activateSegment(function(didStateChanged) {
                 if (didStateChanged) {
                     self.service.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
                     callback(null, state);
@@ -60,12 +74,12 @@ JablotronSecuritySystemAccessory.prototype = {
     getAlarmState: function(callback) {
         this.log("Getting state of alarm ...");
         var self = this;
-        this.jablotron.getAlarmState(function(alarmState){
+        this.jablotron.getSegmentState(this.getSegmentType(), function(alarmState) {
             self.log("Alarm state: " + alarmState);
 
             var state = Characteristic.SecuritySystemCurrentState.DISARMED;
             if (alarmState == "partialSet") {
-                state = Characteristic.SecuritySystemCurrentState.NIGHT_ARM;
+                state = this.partialSetMapping;
             } else if (alarmState == "set") {
                 state = Characteristic.SecuritySystemCurrentState.AWAY_ARM;
             }
@@ -78,13 +92,13 @@ JablotronSecuritySystemAccessory.prototype = {
         this.log("Setting switch state: " + state);
 
         if (state == true) {
-            this.jablotron.activateAlarm(function(didStateChanged) {
+            this.jablotron.activateSegment(function(didStateChanged) {
                 if (didStateChanged) {
                     callback(null, state);
                 }
             })
         } else {
-            this.jablotron.deactivateAlarm(function(didStateChanged) {
+            this.jablotron.deactivateSegment(function(didStateChanged) {
                 if (didStateChanged) {
                     callback(null, state);
                 }
@@ -93,9 +107,8 @@ JablotronSecuritySystemAccessory.prototype = {
     },
 
     getSwitchState: function(callback) {
-        this.log("Getting state of switch ...");
         var self = this;
-        this.jablotron.getSwitchState(function(switchState){
+        this.jablotron.getSegmentState(this.getSegmentType(), function(switchState) {
             self.log("Switch state: " + switchState);
 
             var state = switchState == "set" ? true : false;
