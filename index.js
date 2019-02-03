@@ -27,15 +27,21 @@ JablotronSecuritySystemAccessory.prototype = {
         this.log("Switching to state: " + state);
         var self = this;
 
-        if (state == "3") {
+        if (state == "3" || state == "0") {
             this.jablotron.deactivateAlarm(function(didStateChanged) {
                 if (didStateChanged) {
                     self.securityService.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
                     callback(null, state);
                 }
             })
-        }
-        else {
+        } else if (state == "2") {
+            this.jablotron.partialActivateAlarm(function(didStateChanged) {
+            if (didStateChanged) {
+                self.securityService.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
+                callback(null, state);
+            }
+        })
+        } else {
             this.jablotron.activateAlarm(function(didStateChanged) {
                 if (didStateChanged) {
                     self.securityService.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
@@ -48,10 +54,15 @@ JablotronSecuritySystemAccessory.prototype = {
     getState: function(callback) {
         this.log("Getting state of alarm ...");
         var self = this;
-        this.jablotron.isAlarmActive(function(isAlarmActive){
-            self.log("Is alarm active? " + isAlarmActive);
+        this.jablotron.getAlarmState(function(alarmState){
+            self.log("Alarm state: " + alarmState);
 
-            var state = isAlarmActive ? Characteristic.SecuritySystemCurrentState.AWAY_ARM : Characteristic.SecuritySystemCurrentState.DISARMED;
+            var state = Characteristic.SecuritySystemCurrentState.DISARMED;
+            if (alarmState == "partialSet") {
+                state = Characteristic.SecuritySystemCurrentState.NIGHT_ARM;
+            } else if (alarmState == "set") {
+                state = Characteristic.SecuritySystemCurrentState.AWAY_ARM;
+            }
             self.securityService.setCharacteristic(Characteristic.SecuritySystemCurrentState, state);
             callback(null, state);
         })

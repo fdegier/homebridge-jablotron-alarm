@@ -9,10 +9,15 @@ function Jablotron(log, config, jablotronClient) {
     this.password = config['password'];
     this.pincode = config['pincode'];
     this.serviceId = config['service_id'];
-    this.segment = config['segment'];
-    
-    this.api_hostname = 'api.jablonet.net';
+    this.segmentId = config['segment_id'];
+    this.segmentKey = config['segment_key'];
+    this.keyboardKey = null;
 
+    var keyboard = config['keyboard_key'];
+    if (keyboard && keyboard != null) {
+        this.keyboardKey = keyboard;
+    }
+    
     this.sessionId = null;
 }
 
@@ -79,7 +84,7 @@ Jablotron.prototype = {
                         segment_status[segment['segment_key']] = segment['segment_state'];
                     });
 
-                    callback(segment_status[self.segment] != "unset");
+                    callback(segment_status[self.segmentKey] != "unset");
                 }, function(error){
                     if (self.tryHandleError(error)){
                         self.isAlarmActive(callback);
@@ -89,22 +94,56 @@ Jablotron.prototype = {
         });
     },
 
-    switchAlarmState: function(state, callback) {
+    getAlarmState: function(callback) {
         var self = this;
         this.fetchServiceId(function(serviceId) {
             var payload = {
+                'data': '[{"filter_data":[{"data_type":"section"}],"service_type":"ja100","service_id":' + serviceId + ',"data_group":"serviceData","connect":true}]'
+            };
+
+            self.fetchSessionId(function(sessionId) {
+                self.jablotronClient.doAuthenticatedRequest('/dataUpdate.json', payload, sessionId, function(response) {
+                    var segments = response['data']['service_data'][0]['data'][0]['data']['segments'];
+                    var segment_status = {};
+
+                    segments.forEach((segment, index) => {
+                        segment_status[segment['segment_key']] = segment['segment_state'];
+                    });
+
+                    self.log("Segment status: " + self.segmentKey + " = " + segment_status[self.segmentKey]);
+                    callback(segment_status[self.segmentKey]);
+                }, function(error){
+                    if (self.tryHandleError(error)){
+                        self.getAlarmState(callback);
+                    }
+                });
+            });
+        });
+    },
+
+    switchAlarmState: function(state, callback) {
+        var self = this;
+        this.fetchServiceId(function(serviceId) {
+            var keyboardOrSegmentKey = self.segmentKey;
+            if (self.keyboardKey != null) {
+                keyboardOrSegmentKey = self.keyboardKey;
+            }
+
+            var payload = {
                 'service': 'ja100',
                 'serviceId': serviceId,
-                'segmentId': 'STATE_1',
-                'segmentKey': self.segment,
+                'segmentId': self.segmentId,
+                'segmentKey': keyboardOrSegmentKey,
                 'expected_status': state,
                 'control_code': self.pincode,
             }
 
+            self.log("Switching section " + self.segmentKey + " (using " + keyboardOrSegmentKey + ") to new state: " + state);
+
             self.fetchSessionId(function(sessionId) {
                 self.jablotronClient.doAuthenticatedRequest('/controlSegment.json', payload, sessionId, function(response) {
                     var isStateChanged = response['segment_updates'].length != 0;
-                    self.log('Was alarm state changed? ' + isStateChanged);
+                    self.log('Was alarm state changed? ' + (isStateChanged ? "Yes" : "No"));
                     callback(isStateChanged);
                 }, function(error){
                     if (self.tryHandleError(error)){
@@ -121,6 +160,10 @@ Jablotron.prototype = {
 
     activateAlarm: function(callback) {
         this.switchAlarmState('set', callback);
+    },
+
+    partialActivateAlarm: function(callback) {
+        this.switchAlarmState('partialSet', callback);
     },
 
     tryHandleError: function(error){

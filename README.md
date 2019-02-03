@@ -155,7 +155,9 @@ If the config is empty, add the following to the file, otherwise proceed to chan
                 "password": "yourawesomepassword",
                 "pincode": "1234",
                 "service_id": null,
-                "segment": "section_1"
+                "segment_id": "STATE_1",
+                // "keyboard_key": "keyboard_2_3",
+                "segment_key": "section_1"
             }
         ]
     }
@@ -168,7 +170,9 @@ Change the pincode to the corresponding pincode.
 
 Keep service id null if you have only one alarm, it will be autodected. Otherwise proceed with steps for [obtaining service Id](#Obtaning-service-Id).
 
-Change the segment to the segment that you want to control. Usually this is ‘section_1’
+Change the segment_id & segment_key to the segment that you want to control. Usually this is 'STATE_1' & ‘section_1’
+
+To support 2-state "set" segment button (singleclick arms partially, doubleclick arms fully) uncomment keyboard_key and set its value based on the output of [config helper script](#Obtaning-service-Id)  
 
 ## Connecting to Homekit
 On the command line, execute:
