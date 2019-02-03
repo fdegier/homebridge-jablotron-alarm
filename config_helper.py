@@ -49,7 +49,7 @@ if r['status'] is True:
         }
 
         params3 = {
-            'data': '[{"filter_data":[{"data_type":"section"},{"data_type":"keyboard"}],"service_type":"ja100","service_id":' + str(
+            'data': '[{"filter_data":[{"data_type":"section"},{"data_type":"keyboard"},{"data_type":"pgm"}],"service_type":"ja100","service_id":' + str(
                 service['id']) + ',"data_group":"serviceData","connect":true}]'
         }
         req3 = urllib.request.Request('https://api.jablonet.net/api/1.6/dataUpdate.json',
@@ -73,3 +73,11 @@ if r['status'] is True:
                   "Keyboard_key: {}\n"
                   "Segment_name: {}\n\n"
                   .format(segment['segment_id'], segment['segment_key'], keyboardKey, segment['segment_name']))
+
+        print("This alarm has the following switches (PGM): \n\n")
+        segments = data3['data']['service_data'][0]['data'][2]['data']['segments']
+        for segment in segments:
+            print("Segment_id: {}\n"
+                  "Segment_key: {}\n"
+                  "Segment_name: {}\n\n"
+                  .format(segment['segment_id'], segment['segment_key'], segment['segment_name']))

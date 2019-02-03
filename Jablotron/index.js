@@ -121,6 +121,33 @@ Jablotron.prototype = {
         });
     },
 
+    getSwitchState: function(callback) {
+        var self = this;
+        this.fetchServiceId(function(serviceId) {
+            var payload = {
+                'data': '[{"filter_data":[{"data_type":"pgm"}],"service_type":"ja100","service_id":' + serviceId + ',"data_group":"serviceData","connect":true}]'
+            };
+
+            self.fetchSessionId(function(sessionId) {
+                self.jablotronClient.doAuthenticatedRequest('/dataUpdate.json', payload, sessionId, function(response) {
+                    var segments = response['data']['service_data'][0]['data'][0]['data']['segments'];
+                    var segment_status = {};
+
+                    segments.forEach((segment, index) => {
+                        segment_status[segment['segment_key']] = segment['segment_state'];
+                });
+
+                    self.log("Switch status: " + self.segmentKey + " = " + segment_status[self.segmentKey]);
+                    callback(segment_status[self.segmentKey]);
+                }, function(error){
+                    if (self.tryHandleError(error)){
+                        self.getAlarmState(callback);
+                    }
+                });
+            });
+        });
+    },
+
     switchAlarmState: function(state, callback) {
         var self = this;
         this.fetchServiceId(function(serviceId) {
