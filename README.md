@@ -6,13 +6,14 @@ In the beginning of 2017 I bought and installed a Jablotron JA-100 alarm system 
 If you are unfamiliar with Homekit, it’s Apple’s home automation integration, it basically bundles all of your smart devices in the Home app and lets you control it from 1 app, share access to family and friends, but most importantly provide a secure gateway for remote access and location based automation. See: https://www.apple.com/ios/home/
 
 The objective for the Jablotron Homekit integration is:
-Arm and dis-arm the alarm based on location
+Arm, disarm or partially arm the alarm based on location
+Control PGM Jablotron devices based on location
 Have other devices perform actions based on the status of the alarm
 Include the alarm in scenes
 Control Jablotron from the Home app
 Control Jablotron with Siri
 
-Since we Homekit isn’t enabled on Jablotron we need a bridge to connect Jablotron to Homekit, we will be using Homebridge for this.
+Since Homekit isn’t enabled on Jablotron we need a bridge to connect Jablotron to Homekit, we will be using Homebridge for this.
 
 ## What is Homebridge?
 Homebridge is a lightweight NodeJS server you can run on your home network that emulates the iOS HomeKit API. It supports Plugins, which are community-contributed modules that provide a basic bridge from HomeKit to various 3rd-party APIs provided by manufacturers of "smart home" devices. See: https://github.com/nfarina/homebridge
@@ -156,7 +157,6 @@ If the config is empty, add the following to the file, otherwise proceed to chan
                 "pincode": "1234",
                 "service_id": null,
                 "segment_id": "STATE_1",
-                // "keyboard_key": "keyboard_2_3",
                 "segment_key": "section_1"
             }
         ]
@@ -168,11 +168,75 @@ Change the password to the corresponding password.
 
 Change the pincode to the corresponding pincode.
 
-Keep service id null if you have only one alarm, it will be autodected. Otherwise proceed with steps for [obtaining service Id](#Obtaning-service-Id).
+Keep service id null if you have only one alarm, it will be autodected. Otherwise proceed with steps for [identifying Jablotron services and devices](#Identify-Jablotron-services-and-devices).
 
 Change the segment_id & segment_key to the segment that you want to control. Usually this is 'STATE_1' & ‘section_1’
 
-To support 2-state "set" segment button (singleclick arms partially, doubleclick arms fully) uncomment keyboard_key and set its value based on the output of [config helper script](#Obtaning-service-Id)  
+### Support for partially armed state
+If your Jablotron alarm was configured to support partially armed status, ie where single click on segment's arm key partially arms segment and double click on segment's arm key arms segment fully, you are able to configure the same in Homebridge as well.
+All you need to know is keyboard key of segment's keyboard. To obtain this information proceed with steps for [identifying Jablotron services and devices](#Identify-Jablotron-services-and-devices).
+Once identified modify Homebridge configuration as below:
+
+    {
+        "bridge": {
+            "name": "Homebridge",
+            "username": "CC:22:3D:E3:CE:30",
+            "port": 51826,
+            "pin": "031-45-155"
+        },
+        "accessories": [
+            {
+                "accessory": "Homebridge-Jablotron",
+                "name": "Alarm System",
+                "username": "your@email.com",
+                "password": "yourawesomepassword",
+                "pincode": "1234",
+                "service_id": null,
+                "segment_id": "STATE_1",
+                "segment_key": "section_1",
+                "keyboard_key": "keyboard_2_3"
+            }
+        ]
+    }
+
+### Configuration of PGM devices
+PGM devices are accessories of switch type. By default every Jablotron setup comes with hooter PGM device. You can by using plug switch PGM device too.
+All these are supported by the plugin and appear in Homekit as simple switches (on/off state). PGM devices are listed by the [configuration tool](#Identify-Jablotron-services-and-devices)
+The sample PGM configuration in Homebridge for the 2 PGM devices (Hooter and plug switch installed in the hallway): 
+
+    {
+        "bridge": {
+            "name": "Homebridge",
+            "username": "CC:22:3D:E3:CE:30",
+            "port": 51826,
+            "pin": "031-45-155"
+        },
+        "accessories": [
+            {
+                "accessory": "Homebridge-Jablotron",
+                "name": "Hooter/Sirene",
+                "username": "your@email.com",
+                "password": "yourawesomepassword",
+                "pincode": "1234",
+                "service_id": null,
+                "type": "switch",
+                "segment_id": "PGM_1",
+                "segment_key": "pgm_1",
+            },
+            {
+                "accessory": "Homebridge-Jablotron",
+                "name": "Hallway Plug",
+                "username": "your@email.com",
+                "password": "yourawesomepassword",
+                "pincode": "1234",
+                "service_id": null,
+                "type": "switch",
+                "segment_id": "PGM_2",
+                "segment_key": "pgm_2",
+            }
+        ]
+    }
+
 
 ## Connecting to Homekit
 On the command line, execute:
@@ -188,6 +252,23 @@ Exit homebridge on the command line by pressing CTRL + Z, followed by executing 
 
 The Pi will now reboot and after a couple of minutes it will be back online and Homebridge will be up and running.
 
+## Homekit integration
+The alarm integrates into Homekit as standard security alarm device. Homekit supports 4 states:
+- Home (Stay)
+- Away
+- Night
+- Off
+
+Home/Away/Night are all of "On" state and indicate an armed alarm
+Off indicates disarmed alarm
+
+Jablotron alarm supports 3 states only:
+- Disarmed
+- Partially armed
+- Armed
+
+Disarmed is mapped to Off in Homekit. Partially armed is mapped to Home in Homekit. Armed is mapped to Away
+
 ## Usage
 Now that we have connected the Pi to Jablotron and our Homekit we can start to control Jablotron via Homekit but also automate it.
 
@@ -197,7 +278,7 @@ This works every time and has the added benefit of being more secure, alternativ
 
 If you want to use Siri for controlling the alarm, you need to create a scene, which switches the alarm on or off and then ask Siri to set that scene.
 
-## Obtaning service Id
-To get the service id and segment, run the config_helper.py, this will get all services and related segments that are assigned to your account:
+## Identify Jablotron services and devices
+To identify Jablotron services and devices (segments and PGMs), run the config_helper.py, this will get all services and related segments that are assigned to your account:
 
     python3 config_helper.py username password
