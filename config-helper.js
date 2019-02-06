@@ -37,6 +37,7 @@ JablotronConfigHelper.prototype = {
                     callback(serviceId);
                 }
             }, function (error) {
+                console.log(error);
             });
         })
     },
@@ -75,19 +76,19 @@ JablotronConfigHelper.prototype = {
             self.client.doAuthenticatedRequest('/dataUpdate.json', payload, self.sessionId, function(response) {
                 var keyboards = response['data']['service_data'][0]['data'][1]['data']['segments'];
                 var keyboardMap = {};
-                keyboards.forEach((keyboard, index) => {
+                keyboards.forEach((keyboard) => {
                     if (keyboard['segment_type'] == "keyboard") {
-                    keyboardMap[keyboard['segment_id']] = keyboard['segment_key'];
+                        keyboardMap[keyboard['segment_id']] = keyboard['segment_key'];
                     }
                 });
 
                 var segments = response['data']['service_data'][0]['data'][0]['data']['segments'];
-                segments.forEach((segment, index) => {
+                segments.forEach((segment) => {
                     self.printAccessory("Section", segment, keyboardMap[segment['segment_id']]);
                 });
 
                 segments = response['data']['service_data'][0]['data'][2]['data']['segments'];
-                segments.forEach((segment, index) => {
+                segments.forEach((segment) => {
                     self.printAccessory("PGM", segment, null);
                 });
             });
