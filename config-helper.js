@@ -96,7 +96,7 @@ JablotronConfigHelper.prototype = {
     },
 }
 
-if (process.argv.length < 5) {
+if (process.argv.length < 4) {
     console.log("Required arguments are missing!!!");
 } else {
     var username = process.argv[2];
