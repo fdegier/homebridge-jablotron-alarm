@@ -12,7 +12,7 @@
             "name": "Jablotron",
             "services": [
                 {
-                    "id": 186053,
+                    "id": <service_id>,
                     "name": "Home",
                     "username": "<username>",
                     "password": "<password>",

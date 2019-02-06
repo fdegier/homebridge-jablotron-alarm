@@ -155,7 +155,7 @@ If the config is empty, add the following to the file, otherwise proceed to chan
                 "name": "Jablotron",
                 "services": [
                     {
-                        "id": 186053,
+                        "id": <service_id>,
                         "name": "Home",
                         "username": "<username>",
                         "password": "<passsword>",
