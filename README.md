@@ -27,7 +27,7 @@ Components used in this instructions:
 - Jablotron JA-101KR LAN w/ GSM and radio
 - Router with WiFi
 
-The above components can be changed out to your liking, just make sure you check the compatibility with Homebridge.
+The above components can be changed out to your preferences, just make sure you check the compatibility with Homebridge.
 
 ## Homekit dependencies
 In order to use Apple Homekit you need to make sure you meet Apple’s requirements, most notably the requirements on automation and remote access. See: https://support.apple.com/en-us/HT207057
@@ -148,95 +148,93 @@ If the config is empty, add the following to the file, otherwise proceed to chan
             "port": 51826,
             "pin": "031-45-155"
         },
-        "accessories": [
+        "accessories": [],
+        "platforms": [
             {
-                "accessory": "Homebridge-Jablotron",
-                "name": "Alarm System",
-                "username": "your@email.com",
-                "password": "yourawesomepassword",
-                "pincode": "1234",
-                "service_id": null,
-                "segment_id": "STATE_1",
-                "segment_key": "section_1"
+                "platform": "Jablotron",
+                "name": "Jablotron",
+                "services": [
+                    {
+                        "id": 186053,
+                        "name": "Home",
+                        "username": "<username>",
+                        "password": "<passsword>",
+                        "pincode": "<pincode>",
+                        "pollInterval": 120,
+                        "debug": false,
+                        "sections": [
+                            {
+                                "name": "House",
+                                "segment_id": "STATE_1",
+                                "segment_key": "section_1",
+                                "keyboard_key": "keyboard_2_3"
+                            },
+                            {
+                                "name": "Cellar",
+                                "segment_id": "STATE_2",
+                                "segment_key": "section_2"
+                            },
+                            {
+                                "name": "Terrace",
+                                "segment_id": "STATE_3",
+                                "segment_key": "section_3"
+                            }
+                        ],
+                        "switches": [
+                            {
+                                "name": "Hooter",
+                                "segment_id": "PGM_1",
+                                "segment_key": "pgm_1"
+                            }
+                        ],
+                        "outlets": [
+                            {
+                                "name": "Camera",
+                                "segment_id": "PGM_2",
+                                "segment_key": "pgm_2"
+                            }
+                        ]
+                    }
+                ]
             }
         ]
     }
 
-Change the username to your Jablotron username, it is advised to create a new account for the sole purpose of controlling the alarm via Siri and limiting the authorization on that account.
+### Configuring Jablotron services
+Based on the output of the [configuration tool](#Identify-Jablotron-services-and-devices) you can decide what services you add to the configuration.
+Typically there is single service configured (eg for home) but some people might have more services defined (eg home & office)
 
-Change the password to the corresponding password.
+Each service needs to be configured following attributes:
+- id: mandatory, ID of service obtained by [configuration tool](#Identify-Jablotron-services-and-devices)
+- name: optional, defines a name of a service
+- username: mandatory, your Jablotron username, it is advised to create a new account for the sole purpose of controlling the alarm via Siri and limiting the authorization on that account.
+- password: mandatory, corresponding Jablotron password
+- pincode: mandatory, corresponding PIN code for Jablotron unit
+- pollInterval: optional [default value 120], defines an interval (in seconds) in which plugin periodically checks for service and its accessories states
+- debug: optional [default value false], provides more verbose and detailed logging. Set it to true in case of some issues only!
 
-Change the pincode to the corresponding pincode.
+### Configuring Jablotron sections & accessories
+For each service there needs to be at least one accessory defined. The available accessories can be obtained using [configuration tool](#Identify-Jablotron-services-and-devices)
 
-Keep service id null if you have only one alarm, it will be autodected. Otherwise proceed with steps for [identifying Jablotron services and devices](#Identify-Jablotron-services-and-devices).
+The accessories are of 3 types:
+- section: this is standard segment mounted on Jablotron keyboard unit
+- switch: this is a switchable (PGM device) accessory connected to Jablotron unit (eg hooter/sirene)
+- outlet: this is an outlet (PGM device) connected to Jablotron unit
 
-Change the segment_id & segment_key to the segment that you want to control. Usually this is 'STATE_1' & ‘section_1’
+The configuration above defines:
+- 3 sections/segments
+- 1 switch for hooter/sirene
+- 1 outlet that turns on/off security camera 
+
+Each accessory needs to be configured using following attributes:
+- name: mandatory, name of the accessory (this will be shown in Homekit and typically corresponds to the name defined in Jablotron setup)
+- segment_id: mandatory, ID of a segment assigned in Jablotron setup
+- segment_key: mandatory, key of a segment assigned in Jablotron setup
+- keyboard_key: optional, is used to define a segment keyboard in order to support partially armed state (see below)
 
 ### Support for partially armed state
 If your Jablotron alarm was configured to support partially armed status, ie where single click on segment's arm key partially arms segment and double click on segment's arm key arms segment fully, you are able to configure the same in Homebridge as well.
 All you need to know is keyboard key of segment's keyboard. To obtain this information proceed with steps for [identifying Jablotron services and devices](#Identify-Jablotron-services-and-devices).
-Once identified modify Homebridge configuration as below:
-
-    {
-        "bridge": {
-            "name": "Homebridge",
-            "username": "CC:22:3D:E3:CE:30",
-            "port": 51826,
-            "pin": "031-45-155"
-        },
-        "accessories": [
-            {
-                "accessory": "Homebridge-Jablotron",
-                "name": "Alarm System",
-                "username": "your@email.com",
-                "password": "yourawesomepassword",
-                "pincode": "1234",
-                "service_id": null,
-                "segment_id": "STATE_1",
-                "segment_key": "section_1",
-                "keyboard_key": "keyboard_2_3"
-            }
-        ]
-    }
-
-### Configuration of PGM devices
-PGM devices are accessories of switch type. By default every Jablotron setup comes with hooter PGM device. You can by using plug switch PGM device too.
-All these are supported by the plugin and appear in Homekit as simple switches (on/off state). PGM devices are listed by the [configuration tool](#Identify-Jablotron-services-and-devices)
-The sample PGM configuration in Homebridge for the 2 PGM devices (Hooter and plug switch installed in the hallway): 
-
-    {
-        "bridge": {
-            "name": "Homebridge",
-            "username": "CC:22:3D:E3:CE:30",
-            "port": 51826,
-            "pin": "031-45-155"
-        },
-        "accessories": [
-            {
-                "accessory": "Homebridge-Jablotron",
-                "name": "Hooter/Sirene",
-                "username": "your@email.com",
-                "password": "yourawesomepassword",
-                "pincode": "1234",
-                "service_id": null,
-                "type": "switch",
-                "segment_id": "PGM_1",
-                "segment_key": "pgm_1",
-            },
-            {
-                "accessory": "Homebridge-Jablotron",
-                "name": "Hallway Plug",
-                "username": "your@email.com",
-                "password": "yourawesomepassword",
-                "pincode": "1234",
-                "service_id": null,
-                "type": "switch",
-                "segment_id": "PGM_2",
-                "segment_key": "pgm_2",
-            }
-        ]
-    }
-
 
 ## Connecting to Homekit
 On the command line, execute:
@@ -279,6 +277,6 @@ This works every time and has the added benefit of being more secure, alternativ
 If you want to use Siri for controlling the alarm, you need to create a scene, which switches the alarm on or off and then ask Siri to set that scene.
 
 ## Identify Jablotron services and devices
-To identify Jablotron services and devices (segments and PGMs), run the config_helper.py, this will get all services and related segments that are assigned to your account:
+To identify Jablotron services and devices (segments and PGMs), run the config-helper.js, this will get all services and related segments that are assigned to your account:
 
-    python3 config_helper.py username password
+    node config-helper.js username password

@@ -2,21 +2,57 @@
     "bridge": {
         "name": "Homebridge",
         "username": "CC:22:3D:E3:CE:30",
-        "port": 51826,
-        "pin": "031-45-154"
+        "pin": "031-45-154",
+        "port": 40337
     },
-
-    "accessories": [
+    "accessories": [],
+    "platforms": [
         {
-            "accessory": "Homebridge-Jablotron",
-            "name": "Alarm System",
-            "username": "your@email.com",
-            "password": "yourawesomepassword",
-            "pincode": "1234",
-            "service_id": null,
-            "segment_id": "STATE_1",
-            // "keyboard_key": "keyboard_2_3",
-            "segment_key": "section_1"
+            "platform": "Jablotron",
+            "name": "Jablotron",
+            "services": [
+                {
+                    "id": 186053,
+                    "name": "Home",
+                    "username": "<username>",
+                    "password": "<password>",
+                    "pincode": "<pincode>",
+                    "pollInterval": 120,
+                    "debug": false,
+                    "sections": [
+                        {
+                            "name": "House",
+                            "segment_id": "STATE_1",
+                            "segment_key": "section_1",
+                            "keyboard_key": "keyboard_2_3"
+                        },
+                        {
+                            "name": "Cellar",
+                            "segment_id": "STATE_2",
+                            "segment_key": "section_2"
+                        },
+                        {
+                            "name": "Terrace",
+                            "segment_id": "STATE_3",
+                            "segment_key": "section_3"
+                        }
+                    ],
+                    "switches": [
+                        {
+                            "name": "Hooter",
+                            "segment_id": "PGM_1",
+                            "segment_key": "pgm_1"
+                        }
+                    ],
+                    "outlets": [
+                        {
+                            "name": "Camera",
+                            "segment_id": "PGM_2",
+                            "segment_key": "pgm_2"
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }
