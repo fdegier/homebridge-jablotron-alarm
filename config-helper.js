@@ -47,7 +47,7 @@ JablotronConfigHelper.prototype = {
         console.log("   name = " + segment['segment_name']);
         console.log("   segment_id = " + segment['segment_id']);
         console.log("   segment_key = " + segment['segment_key']);
-        if (keyboardKey != null) {
+        if (keyboardKey && keyboardKey != null) {
             console.log("   keyboard_key = " + keyboardKey);
         }
         console.log("");
@@ -55,16 +55,7 @@ JablotronConfigHelper.prototype = {
 
     getAccessories: function () {
         var self = this;
-        var config = new Object();
-        config.platform = "Jablotron";
-        config.name = "Jablotron";
-        config.services = [];
-
         this.fetchServices(function(serviceId) {
-            var service = new Object();
-            service.id = serviceId;
-            config.services.push(service);
-
             console.log("--------------------");
             console.log("Service: ID = " + serviceId);
             console.log("--------------------");
