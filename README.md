@@ -160,7 +160,9 @@ If the config is empty, add the following to the file, otherwise proceed to chan
                         "username": "<username>",
                         "password": "<passsword>",
                         "pincode": "<pincode>",
-                        "pollInterval": 120,
+                        "autoRefresh": true,
+                        "pollInterval": 60,
+                        "refreshOnStateChange": true,
                         "debug": false,
                         "sections": [
                             {
@@ -205,21 +207,23 @@ Based on the output of the [configuration tool](#Identify-Jablotron-services-and
 Typically there is single service configured (eg for home) but some people might have more services defined (eg home & office)
 
 Each service needs to be configured following attributes:
-- id: mandatory, ID of service obtained by [configuration tool](#Identify-Jablotron-services-and-devices)
-- name: optional, defines a name of a service
-- username: mandatory, your Jablotron username, it is advised to create a new account for the sole purpose of controlling the alarm via Siri and limiting the authorization on that account.
-- password: mandatory, corresponding Jablotron password
-- pincode: mandatory, corresponding PIN code for Jablotron unit
-- pollInterval: optional [default value 120], defines an interval (in seconds) in which plugin periodically checks for service and its accessories states
-- debug: optional [default value false], provides more verbose and detailed logging. Set it to true in case of some issues only!
+- **id**: mandatory, ID of service obtained by [configuration tool](#Identify-Jablotron-services-and-devices)
+- **name**: mandatory, defines a name of a service
+- **username**: mandatory, your Jablotron username, it is advised to create a new account for the sole purpose of controlling the alarm via Siri and limiting the authorization on that account.
+- **password**: mandatory, corresponding Jablotron password
+- **pincode**: mandatory, corresponding PIN code for Jablotron unit
+- **autoRefresh**: optional [default value true], enables autorefresh mode that automatically polls the Jablotron status in interval defined using **pollInterval** attribute
+- **pollInterval**: optional [default value 60], defines an interval (in seconds) in which plugin periodically checks for service's and its accessories' states
+- **refreshOnStateChange**: optional [default value true], enables automatic refresh upon arm/disarm. This is typically used if you have other Jablotron accessories (eg outlets) set up and configured to automatically switch on/off based on alarm state
+- **debug**: optional [default value false], provides more verbose and detailed logging. Set it to true in case of some issues only!
 
 ### Configuring Jablotron sections & accessories
 For each service there needs to be at least one accessory defined. The available accessories can be obtained using [configuration tool](#Identify-Jablotron-services-and-devices)
 
 The accessories are of 3 types:
-- section: this is standard segment mounted on Jablotron keyboard unit
-- switch: this is a switchable (PGM device) accessory connected to Jablotron unit (eg hooter/sirene)
-- outlet: this is an outlet (PGM device) connected to Jablotron unit
+- **section**: this is standard segment mounted on Jablotron keyboard unit
+- **switch**: this is a switchable (PGM device) accessory connected to Jablotron unit (eg hooter/sirene)
+- **outlet**: this is an outlet (PGM device) connected to Jablotron unit
 
 The configuration above defines:
 - 3 sections/segments
@@ -227,10 +231,10 @@ The configuration above defines:
 - 1 outlet that turns on/off security camera 
 
 Each accessory needs to be configured using following attributes:
-- name: mandatory, name of the accessory (this will be shown in Homekit and typically corresponds to the name defined in Jablotron setup)
-- segment_id: mandatory, ID of a segment assigned in Jablotron setup
-- segment_key: mandatory, key of a segment assigned in Jablotron setup
-- keyboard_key: optional, is used to define a segment keyboard in order to support partially armed state (see below)
+- **name**: mandatory, name of the accessory (this will be shown in Homekit and typically corresponds to the name defined in Jablotron setup)
+- **segment_id**: mandatory, ID of a segment assigned in Jablotron setup
+- **segment_key**: mandatory, key of a segment assigned in Jablotron setup
+- **keyboard_key**: optional, is used to define a segment keyboard in order to support partially armed state (see below)
 
 ### Support for partially armed state
 If your Jablotron alarm was configured to support partially armed status, ie where single click on segment's arm key partially arms segment and double click on segment's arm key arms segment fully, you are able to configure the same in Homebridge as well.

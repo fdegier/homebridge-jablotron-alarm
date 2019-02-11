@@ -17,7 +17,9 @@
                     "username": "<username>",
                     "password": "<password>",
                     "pincode": "<pincode>",
-                    "pollInterval": 120,
+                    "autoRefresh": true,
+                    "pollInterval": 60,
+                    "refreshOnStateChange": true,
                     "debug": false,
                     "sections": [
                         {
