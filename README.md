@@ -234,7 +234,7 @@ Each accessory needs to be configured using following attributes:
 - **name**: mandatory, name of the accessory (this will be shown in Homekit and typically corresponds to the name defined in Jablotron setup)
 - **segment_id**: mandatory, ID of a segment assigned in Jablotron setup
 - **segment_key**: mandatory, key of a segment assigned in Jablotron setup
-- **keyboard_key**: optional, is used to define a segment keyboard in order to support partially armed state (see below)
+- **keyboard_key**: optional, is used to define a segment keyboard in order to support partially armed state (see below). Please specify the value only if you have Jablotron segment/section configured for partially armed state!
 
 ### Support for partially armed state
 If your Jablotron alarm was configured to support partially armed status, ie where single click on segment's arm key partially arms segment and double click on segment's arm key arms segment fully, you are able to configure the same in Homebridge as well.
