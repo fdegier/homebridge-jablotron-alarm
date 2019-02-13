@@ -1,3 +1,7 @@
+[![npm version](https://badge.fury.io/js/homebridge-jablotron.svg)](https://badge.fury.io/js/homebridge-jablotron)
+-  
+  
+  
 ![alt-text](homekit.jpg)
 
 ## Enabling Homekit and Siri for Jablotron Alarms
