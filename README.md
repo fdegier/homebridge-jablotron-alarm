@@ -1,6 +1,7 @@
 [![npm version](https://badge.fury.io/js/homebridge-jablotron.svg)](https://badge.fury.io/js/homebridge-jablotron)
--  
-  
+![dependencies](https://david-dm.org/F4stFr3ddy/homebridge-jablotron-alarm.svg)
+[![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)
+---
   
 ![alt-text](homekit.jpg)
 
