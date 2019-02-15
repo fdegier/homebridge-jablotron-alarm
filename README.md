@@ -1,8 +1,3 @@
-[![npm version](https://badge.fury.io/js/homebridge-jablotron.svg)](https://badge.fury.io/js/homebridge-jablotron)
-![dependencies](https://david-dm.org/F4stFr3ddy/homebridge-jablotron-alarm.svg)
-[![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)
----
-  
 ![alt-text](homekit.jpg)
 
 ## Enabling Homekit and Siri for Jablotron Alarms
@@ -288,4 +283,5 @@ If you want to use Siri for controlling the alarm, you need to create a scene, w
 ## Identify Jablotron services and devices
 To identify Jablotron services and devices (segments and PGMs), run the config-helper.js, this will get all services and related segments that are assigned to your account:
 
+    cd /usr/local/lib/node_modules/homebridge-jablotron
     node config-helper.js username password
