@@ -160,11 +160,11 @@ If the config is empty, add the following to the file, otherwise proceed to chan
                 "name": "Jablotron",
                 "services": [
                     {
-                        "id": <service_id>,
+                        "id": 123456,
                         "name": "Home",
-                        "username": "<username>",
-                        "password": "<passsword>",
-                        "pincode": "<pincode>",
+                        "username": "username",
+                        "password": "passsword",
+                        "pincode": "pincode",
                         "autoRefresh": true,
                         "pollInterval": 60,
                         "refreshOnStateChange": true,
@@ -286,7 +286,8 @@ This works every time and has the added benefit of being more secure, alternativ
 If you want to use Siri for controlling the alarm, you need to create a scene, which switches the alarm on or off and then ask Siri to set that scene.
 
 ## Identify Jablotron services and devices
-To identify Jablotron services and devices (segments and PGMs), run the config-helper.js, this will get all services and related segments that are assigned to your account:
+**Make sure all the segments on the Jablotron unit are disarmed prior running this utility** - this will ensure keyboard detection for partially armed state works as expected:
+To identify Jablotron services and devices (segments and PGMs) run the config-helper.js, this will get all services and related segments that are assigned to your account.
 
     cd /usr/local/lib/node_modules/homebridge-jablotron
     node config-helper.js username password

@@ -1,6 +1,6 @@
 {
   "name": "homebridge-jablotron",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Control your Jablotron alarm system from your iOS device using HomeKit and Homebridge.",
   "license": "MIT",
   "keywords": [
@@ -34,7 +34,8 @@
   "main": "lib/index.js",
   "files": [
     "lib",
-    "config-helper.js"
+    "config-helper.js",
+    "sample-config.json"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
