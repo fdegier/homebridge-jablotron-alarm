@@ -12,11 +12,11 @@
             "name": "Jablotron",
             "services": [
                 {
-                    "id": <service_id>,
+                    "id": 123456,
                     "name": "Home",
-                    "username": "<username>",
-                    "password": "<password>",
-                    "pincode": "<pincode>",
+                    "username": "username",
+                    "password": "password",
+                    "pincode": "pincode",
                     "autoRefresh": true,
                     "pollInterval": 60,
                     "refreshOnStateChange": true,
