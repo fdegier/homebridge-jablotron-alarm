@@ -16,7 +16,8 @@ JablotronConfigHelper.prototype = {
     fetchSessionId: function (callback) {
         let payload = {
             'login': this.username,
-            'password': this.password
+            'password': this.password,
+            'system': 'Android'
         };
 
         let self = this;
@@ -71,7 +72,7 @@ JablotronConfigHelper.prototype = {
         let self = this;
         this.fetchServices(function (serviceId) {
             let payload = {
-                'data': '[{"filter_data":[{"data_type":"section"},{"data_type":"keyboard"},{"data_type":"pgm"}],"service_type":"ja100","service_id":' + serviceId + ',"data_group":"serviceData","connect":true}]'
+                'data': '[{"filter_data":[{"data_type":"section"},{"data_type":"keyboard"},{"data_type":"pgm"}],"service_type":"ja100","service_id":' + serviceId + ',"data_group":"serviceData","connect":true,"system":"Android"}]'
             };
 
             self.client.doAuthenticatedRequest('/dataUpdate.json', payload, self.sessionId, function (response) {
@@ -95,7 +96,7 @@ JablotronConfigHelper.prototype = {
                     self.log("");
                 }
 
-                let keyboards = response['data']['service_data'][0]['data'][1]['data']['segments'];
+                let keyboards = response['data']['service_data'][0]['data'][2]['data']['segments'];
                 let keyboardMap = {};
                 keyboards.forEach(function (keyboard) {
                     if (self.isSegmentUsable(keyboard) && keyboard['segment_type'] == "keyboard" && keyboard['segment_subtype'] == 'section' && keyboard['segment_next_set_state'] == 'partialSet') {
