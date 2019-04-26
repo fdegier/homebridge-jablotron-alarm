@@ -48,8 +48,8 @@ JablotronConfigHelper.prototype = {
     createAccessory: function (segment, keyboardKey) {
         let result = {};
         result.name = segment['segment_name'];
-        result.section_id = segment['segment_id'];
-        result.section_key = segment['segment_key'];
+        result.segment_id = segment['segment_id'];
+        result.segment_key = segment['segment_key'];
         if (keyboardKey && keyboardKey != null) {
             result.keyboard_key = keyboardKey;
         }
