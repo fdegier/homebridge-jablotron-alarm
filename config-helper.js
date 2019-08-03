@@ -96,7 +96,7 @@ JablotronConfigHelper.prototype = {
                     self.log("");
                 }
 
-                let keyboards = response['data']['service_data'][0]['data'][2]['data']['segments'];
+                let keyboards = response['data']['service_data'][0]['data'][1]['data']['segments'];
                 let keyboardMap = {};
                 keyboards.forEach(function (keyboard) {
                     if (self.isSegmentUsable(keyboard) && keyboard['segment_type'] == "keyboard" && keyboard['segment_subtype'] == 'section' && keyboard['segment_next_set_state'] == 'partialSet') {
