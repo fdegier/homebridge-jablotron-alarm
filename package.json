@@ -25,11 +25,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com:F4stFr3ddy/homebridge-jablotron.git"
+    "url": "git://github.com:F4stFr3ddy/homebridge-jablotron-alarm.git"
   },
   "readmeFilename": "README.md",
   "bugs": {
-    "url": "https://github.com/F4stFr3ddy/homebridge-jablotron/issues"
+    "url": "https://github.com/F4stFr3ddy/homebridge-jablotron-alarm/issues"
   },
   "main": "lib/index.js",
   "files": [
