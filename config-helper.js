@@ -22,6 +22,9 @@ JablotronConfigHelper.prototype = {
 
         let self = this;
         this.client.doRequest('/login.json', payload, null, function (response) {
+            if (response.service_terms_accepted !== undefined) {
+                return console.log("ERROR: YOU FIRST NEED TO ACTIVATE YOUR ACCOUNT, GO TO JABLONET.COM ");
+            }
             let sessionId = response['session_id'];
             self.sessionId = sessionId;
             callback(sessionId);
