@@ -211,6 +211,8 @@ If the config is empty, add the following to the file, otherwise proceed to chan
 Based on the output of the [configuration tool](#Identify-Jablotron-services-and-devices) you can decide what services you add to the configuration.
 Typically there is single service configured (eg for home) but some people might have more services defined (eg home & office)
 
+MAKE SURE YOU HAVE ACCEPTED THE JABLOTRON TERMS OF SERVICE OR YOUR ACCOUNT WILL NOT WORK.
+
 Each service needs to be configured following attributes:
 - **id**: mandatory, ID of service obtained by [configuration tool](#Identify-Jablotron-services-and-devices)
 - **name**: mandatory, defines a name of a service
