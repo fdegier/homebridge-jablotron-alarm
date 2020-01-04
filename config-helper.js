@@ -2,9 +2,10 @@
 
 const JablotronClient = require('./lib/jablotron-client');
 
-function JablotronConfigHelper(username, password, log, debug) {
+function JablotronConfigHelper(username, password, service_type, log, debug) {
     this.username = username;
     this.password = password;
+    this.service_type = service_type;
     this.client = new JablotronClient(log);
     this.sessionId = null;
     this.log = log;
@@ -12,14 +13,12 @@ function JablotronConfigHelper(username, password, log, debug) {
 }
 
 JablotronConfigHelper.prototype = {
-
     fetchSessionId: function (callback) {
         let payload = {
             'login': this.username,
             'password': this.password,
             'system': 'Android'
         };
-
         let self = this;
         this.client.doRequest('/login.json', payload, null, function (response) {
             if (response.service_terms_accepted !== undefined) {
@@ -60,7 +59,7 @@ JablotronConfigHelper.prototype = {
     },
 
     isSegmentUsable: function (segment) {
-        if (!segment['segment_is_controllable']) {
+        if (!segment['segment_is_controllable'] && this.service_type === "ja100") {
             return false;
         }
 
@@ -73,9 +72,10 @@ JablotronConfigHelper.prototype = {
 
     getAccessories: function () {
         let self = this;
+        let serviceType = this.service_type;
         this.fetchServices(function (serviceId) {
             let payload = {
-                'data': '[{"filter_data":[{"data_type":"section"},{"data_type":"keyboard"},{"data_type":"pgm"}],"service_type":"ja100","service_id":' + serviceId + ',"data_group":"serviceData","connect":true,"system":"Android"}]'
+                'data': '[{"filter_data":[{"data_type":"section"},{"data_type":"keyboard"},{"data_type":"pgm"}],"service_type": "' + serviceType + '","service_id":' + serviceId + ',"data_group":"serviceData","connect":true,"system":"Android"}]'
             };
 
             self.client.doAuthenticatedRequest('/dataUpdate.json', payload, self.sessionId, function (response) {
@@ -85,6 +85,7 @@ JablotronConfigHelper.prototype = {
                 service.username = self.username;
                 service.password = self.password;
                 service.pincode = "Enter Your pincode";
+                service.service_type = self.service_type;
                 service.sections = [];
                 service.switches = [];
                 service.outlets = [];
@@ -136,13 +137,20 @@ if (process.argv.length < 4) {
     let username = process.argv[2];
     let password = process.argv[3];
     let debug = false;
+    let service_type = "ja100";
 
     for (let i = 4; i < process.argv.length; i++) {
+        if (process.argv[i] == '-O') {
+            service_type = "oasis";
+        }
+    }
+
+    for (let i = 5; i < process.argv.length; i++) {
         if (process.argv[i] == '-d') {
             debug = true;
         }
     }
 
-    let helper = new JablotronConfigHelper(username, password, console.log, debug);
+    let helper = new JablotronConfigHelper(username, password, service_type, console.log, debug);
     helper.getAccessories();
 }
