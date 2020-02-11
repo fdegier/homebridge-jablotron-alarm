@@ -1,0 +1,166 @@
+{
+  "pluginAlias": "Jablotron",
+  "pluginType": "platform",
+  "footerDisplay": "Control your Jablotron alarm system from your iOS device using HomeKit and Homebridge, which is available [here](https://github.com/F4stFr3ddy/homebridge-jablotron-alarm.git).",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "title": "Name",
+        "type": "string",
+        "default": "Jablotron",
+        "required": true
+      },
+      "services": {
+        "title": "Services",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "integer",
+              "default": 12345,
+              "required": true
+            },
+            "name": {
+              "title": "Name",
+              "type": "string",
+              "default": "Home",
+              "required": true
+            },
+            "username": {
+              "title": "User name",
+              "type": "string",
+              "default": "username",
+              "required": true
+            },
+            "password": {
+              "title": "Password",
+              "type": "string",
+              "default": "password",
+              "required": true
+            },
+            "pincode": {
+              "title": "Pin code",
+              "type": "string",
+              "default": "pin",
+              "required": true
+            },
+            "autoRefresh": {
+              "title": "Auto refresch",
+              "type": "boolean",
+              "default": true,
+              "required": true
+            },
+            "poolInterval": {
+              "title": "Poll interval",
+              "type": "integer",
+              "default": 60,
+              "required": true
+            },
+            "refreshOnStateChange": {
+              "title": "Refresh on state change",
+              "type": "boolean",
+              "default": true,
+              "required": true
+            },
+            "debug": {
+              "title": "Debug",
+              "type": "boolean",
+              "default": true,
+              "required": false
+            },
+            "sections": {
+              "title": "Sections",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "title": "House",
+                    "type": "string",
+                    "default": "House",
+                    "required": true
+                  },
+                  "segment_id": {
+                    "title": "Segment ID",
+                    "type": "string",
+                    "default": "STATE_1",
+                    "required": true
+                  },
+                  "segment_key": {
+                    "title": "Segment key",
+                    "type": "string",
+                    "default": "section_1",
+                    "required": true
+                  },
+                  "keyboard_key": {
+                    "title": "Kayboard key",
+                    "type": "string",
+                    "default": "keyboard_2_3",
+                    "required": true
+                  }
+                }
+              }
+            },
+            "switches": {
+              "title": "Switches",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "default": "Hooter",
+                    "required": false
+                  },
+                  "segment_id": {
+                    "title": "Segment ID",
+                    "type": "string",
+                    "default": "PGM_1",
+                    "required": false
+                  },
+                  "segment_key": {
+                    "title": "Segment key",
+                    "type": "string",
+                    "default": "pgm_1",
+                    "required": false
+                  }
+                }
+              }
+            },
+            "outlets": {
+              "title": "Outlets",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "default": "Camera",
+                    "required": false
+                  },
+                  "segment_id": {
+                    "title": "Segment ID",
+                    "type": "string",
+                    "default": "PGM_2",
+                    "required": false
+                  },
+                  "segment_key": {
+                    "title": "Segment key",
+                    "type": "string",
+                    "default": "pgm_2",
+                    "required": false
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
