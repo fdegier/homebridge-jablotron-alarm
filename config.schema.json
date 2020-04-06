@@ -48,7 +48,7 @@
               "required": true
             },
             "autoRefresh": {
-              "title": "Auto refresch",
+              "title": "Auto refresh",
               "type": "boolean",
               "default": true,
               "required": true
@@ -113,19 +113,16 @@
                   "name": {
                     "title": "Name",
                     "type": "string",
-                    "default": "Hooter",
                     "required": false
                   },
                   "segment_id": {
                     "title": "Segment ID",
                     "type": "string",
-                    "default": "PGM_1",
                     "required": false
                   },
                   "segment_key": {
                     "title": "Segment key",
                     "type": "string",
-                    "default": "pgm_1",
                     "required": false
                   }
                 }
@@ -140,19 +137,16 @@
                   "name": {
                     "title": "Name",
                     "type": "string",
-                    "default": "Camera",
                     "required": false
                   },
                   "segment_id": {
                     "title": "Segment ID",
                     "type": "string",
-                    "default": "PGM_2",
                     "required": false
                   },
                   "segment_key": {
                     "title": "Segment key",
                     "type": "string",
-                    "default": "pgm_2",
                     "required": false
                   }
                 }
