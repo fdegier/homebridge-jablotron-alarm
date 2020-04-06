@@ -20,6 +20,8 @@ Control Jablotron with Siri
 
 Since Homekit isn’t enabled on Jablotron we need a bridge to connect Jablotron to Homekit, we will be using Homebridge for this.
 
+Most of this README is written for first time users of Homebridge so feel free to skip most parts if you already have it.
+
 ## What is Homebridge?
 Homebridge is a lightweight NodeJS server you can run on your home network that emulates the iOS HomeKit API. It supports Plugins, which are community-contributed modules that provide a basic bridge from HomeKit to various 3rd-party APIs provided by manufacturers of "smart home" devices. See: https://github.com/nfarina/homebridge
 
@@ -42,10 +44,8 @@ In order to use Apple Homekit you need to make sure you meet Apple’s requireme
 - Follow along this tutorial
 - Contact us for a prepped SD card or a whole Pi with OS
 - Use an existing Homebridge installation
+- Use Docker
 - Download the Homebridge for Raspberry Pi app which will do all the installation work for you https://itunes.apple.com/nl/app/homebridge-for-raspberrypi/id1123183713?mt=8
-
-## Future development
-If you like to contribute feel free to send me a message and I'll share the code.
 
 ## Preparing the OS
 For our OS we will be using Jessie Lite, get the latest version from:
@@ -290,6 +290,8 @@ If you want to use Siri for controlling the alarm, you need to create a scene, w
 ## Identify Jablotron services and devices
 **Make sure all the segments on the Jablotron unit are disarmed prior running this utility** - this will ensure keyboard detection for partially armed state works as expected:
 To identify Jablotron services and devices (segments and PGMs) run the config-helper.js, this will get all services and related segments that are assigned to your account.
+
+In case you have an Oasis, add the option `-O` but do note that it's not possible to control the sections indivually as the app also does not allow this. You could however control all of them at once.
 
     cd /usr/local/lib/node_modules/homebridge-jablotron
     node config-helper.js username password
