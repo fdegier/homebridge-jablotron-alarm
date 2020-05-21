@@ -2,6 +2,7 @@
 ![dependencies](https://david-dm.org/F4stFr3ddy/homebridge-jablotron-alarm.svg)
 [![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)
 ![Publish NPM](https://github.com/F4stFr3ddy/homebridge-jablotron-alarm/workflows/Publish%20NPM/badge.svg)
+[![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
 ---
 
 ![alt-text](homekit.jpg)
