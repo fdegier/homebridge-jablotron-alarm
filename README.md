@@ -297,3 +297,6 @@ In case you have an Oasis, add the option `-O` but do note that it's not possibl
 
     cd /usr/local/lib/node_modules/homebridge-jablotron
     node config-helper.js username password
+
+## Troubleshooting
+- Jablontron cloud services require users' input to agree with its terms. Without confirmed agreement with these terms Jablotron Homebridge plugin won't work and will show Service Unavailable in the logs. To agree with Jablotron cloud terms sign into [MyJablotron](https://www.jablonet.net) using account configured for the plugin and the agreement comes up as first screen - click `I Agree` and the plugin starts working again
