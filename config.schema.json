@@ -100,6 +100,28 @@
                     "type": "string",
                     "default": "keyboard_2_3",
                     "required": true
+                  },
+                  "armedMode": {
+                    "title": "Armed mode",
+                    "type": "string",
+                    "default": "Away",
+                    "required": false,
+                    "enum": [
+                      "Home",
+                      "Night",
+                      "Away"
+                    ]
+                  },
+                  "partiallyArmedMode": {
+                    "title": "Partially armed mode",
+                    "type": "string",
+                    "default": "Home",
+                    "required": false,
+                    "enum": [
+                      "Home",
+                      "Night",
+                      "Away"
+                    ]
                   }
                 }
               }

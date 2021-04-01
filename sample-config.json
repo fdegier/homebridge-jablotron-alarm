@@ -26,7 +26,8 @@
                             "name": "House",
                             "segment_id": "STATE_1",
                             "segment_key": "section_1",
-                            "keyboard_key": "keyboard_2_3"
+                            "keyboard_key": "keyboard_2_3",
+                            "partiallyArmedMode": "Home"
                         },
                         {
                             "name": "Cellar",

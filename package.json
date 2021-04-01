@@ -1,6 +1,6 @@
 {
   "name": "homebridge-jablotron",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "Control your Jablotron alarm system from your iOS device using HomeKit and Homebridge.",
   "license": "MIT",
   "homepage": "https://github.com/F4stFr3ddy/homebridge-jablotron-alarm#readme",
