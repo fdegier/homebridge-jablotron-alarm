@@ -99,7 +99,7 @@
                     "title": "Kayboard key",
                     "type": "string",
                     "default": "keyboard_2_3",
-                    "required": true
+                    "required": false
                   },
                   "armedMode": {
                     "title": "Armed mode",
