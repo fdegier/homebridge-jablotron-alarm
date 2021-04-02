@@ -42,7 +42,7 @@
                     ],
                     "switches": [
                         {
-                            "name": "Hooter",
+                            "name": "Siren",
                             "segment_id": "PGM_1",
                             "segment_key": "pgm_1"
                         }

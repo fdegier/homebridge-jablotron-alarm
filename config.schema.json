@@ -96,7 +96,7 @@
                     "required": true
                   },
                   "keyboard_key": {
-                    "title": "Kayboard key",
+                    "title": "Keyboard key",
                     "type": "string",
                     "default": "keyboard_2_3",
                     "required": false
