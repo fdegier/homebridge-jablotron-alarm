@@ -176,12 +176,14 @@ If the config is empty, add the following to the file, otherwise proceed to chan
                                 "name": "House",
                                 "segment_id": "STATE_1",
                                 "segment_key": "section_1",
-                                "keyboard_key": "keyboard_2_3"
+                                "keyboard_key": "keyboard_2_3",
+                                "partiallyArmedMode": "Night"
                             },
                             {
                                 "name": "Cellar",
                                 "segment_id": "STATE_2",
-                                "segment_key": "section_2"
+                                "segment_key": "section_2",
+                                "armedMode": "Home"
                             },
                             {
                                 "name": "Terrace",
@@ -248,6 +250,15 @@ Each accessory needs to be configured using following attributes:
 ### Support for partially armed state
 If your Jablotron alarm was configured to support partially armed status, ie where single click on segment's arm key partially arms segment and double click on segment's arm key arms segment fully, you are able to configure the same in Homebridge as well.
 All you need to know is keyboard key of segment's keyboard. To obtain this information proceed with steps for [identifying Jablotron services and devices](#Identify-Jablotron-services-and-devices).
+
+### Mapping of Security System States
+For sections you can now override mapping of armed/partially armed states to Homekit states. By default armed state is mapped to Away and
+partially armed state is mapped to Home in Homekit. For each section you can now define additional 2 attributes:
+- **armedMode**: Homekit mapping of armed state. Can be set to one of Home/Night/Away
+- **partiallyArmedMode**: Homekit mapping of partially armed state. Can be set to one of Home/Night/Away
+
+Each section will appear in Homekit with the right number of states. Without partially armed state it would always appear with Off/"Armed" states
+With partially armed state it would appear as Off/"Partially Armed"/"Armed"
 
 ## Connecting to Homekit
 On the command line, execute:
