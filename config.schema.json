@@ -1,6 +1,7 @@
 {
   "pluginAlias": "Jablotron",
   "pluginType": "platform",
+  "headerDisplay": "This plugin works with Denon/Marantz AV Receivers series X and are exposed to HomeKit as separate accessories and each needs to be manually paired.\n\n1. Open the Home <img src='https://user-images.githubusercontent.com/3979615/78010622-4ea1d380-738e-11ea-8a17-e6a465eeec35.png' height='16.42px'> app on your device.\n2. Tap the Home tab, then tap <img src='https://user-images.githubusercontent.com/3979615/78010869-9aed1380-738e-11ea-9644-9f46b3633026.png' height='16.42px'>.\n3. Tap *Add Accessory*, and select *I Don't Have a Code or select More Options*.\n4. Select Accessory and Enter the Homebridge PIN, or scan the QR code in Homebridge UI.",
   "footerDisplay": "Control your Jablotron alarm system from your iOS device using HomeKit and Homebridge, which is available [here](https://github.com/F4stFr3ddy/homebridge-jablotron-alarm.git).",
   "schema": {
     "type": "object",
@@ -21,54 +22,63 @@
               "title": "Id",
               "type": "integer",
               "default": 12345,
+              "description": "ID of service obtained by [configuration tool](#Identify-Jablotron-services-and-devices).",
               "required": true
             },
             "name": {
               "title": "Name",
               "type": "string",
               "default": "Home",
+              "description": "Defines a name of a service.",
               "required": true
             },
             "username": {
               "title": "User name",
               "type": "string",
               "default": "username",
+              "description": "Your Jablotron username, it is advised to create a new account for the sole purpose of controlling the alarm via Siri and limiting the authorization on that account.",
               "required": true
             },
             "password": {
               "title": "Password",
               "type": "string",
               "default": "password",
+              "description": "Jablotron password.",
               "required": true
             },
             "pincode": {
               "title": "Pin code",
               "type": "string",
               "default": "pin",
+              "description": "PIN code for Jablotron unit.",
               "required": true
             },
             "autoRefresh": {
               "title": "Auto refresh",
               "type": "boolean",
               "default": true,
+              "description": "Enables autorefresh mode that automatically polls the Jablotron status in interval defined using **pollInterval** attribute.",
               "required": true
             },
             "poolInterval": {
               "title": "Poll interval",
               "type": "integer",
               "default": 60,
+              "description": "Define an interval (in seconds) in which plugin periodically checks for service's and its accessories' states.",
               "required": true
             },
             "refreshOnStateChange": {
               "title": "Refresh on state change",
               "type": "boolean",
               "default": true,
+              "description": "Eenables automatic refresh upon arm/disarm. This is typically used if you have other Jablotron accessories (eg outlets) set up and configured to automatically switch on/off based on alarm state.",
               "required": true
             },
             "debug": {
               "title": "Debug",
               "type": "boolean",
               "default": true,
+              "description": "Provides more verbose and detailed logging. Set it to true in case of some issues only!",
               "required": false
             },
             "sections": {
@@ -81,30 +91,35 @@
                     "title": "House",
                     "type": "string",
                     "default": "House",
+                    "description": "Name of the accessory (this will be shown in Homekit and typically corresponds to the name defined in Jablotron setup)",
                     "required": true
                   },
                   "segment_id": {
                     "title": "Segment ID",
                     "type": "string",
                     "default": "STATE_1",
+                    "description": "ID of a segment assigned in Jablotron setup.",
                     "required": true
                   },
                   "segment_key": {
                     "title": "Segment key",
                     "type": "string",
                     "default": "section_1",
+                    "description": "Key of a segment assigned in Jablotron setup.",
                     "required": true
                   },
                   "keyboard_key": {
                     "title": "Keyboard key",
                     "type": "string",
                     "default": "keyboard_2_3",
+                    "description": "Is used to define a segment keyboard in order to support partially armed state (see below). Please specify the value only if you have Jablotron segment/section configured for partially armed state!.",
                     "required": false
                   },
                   "armedMode": {
                     "title": "Armed mode",
                     "type": "string",
                     "default": "Away",
+                    "description": "Homekit mapping of armed state. Can be set to one of Home/Night/Away.",
                     "required": false,
                     "enum": [
                       "Home",
@@ -116,6 +131,7 @@
                     "title": "Partially armed mode",
                     "type": "string",
                     "default": "Home",
+                    "description": "Homekit mapping of partially armed state. Can be set to one of Home/Night/Away.",
                     "required": false,
                     "enum": [
                       "Home",
@@ -135,16 +151,19 @@
                   "name": {
                     "title": "Name",
                     "type": "string",
+                    "description": "Name of the accessory (this will be shown in Homekit and typically corresponds to the name defined in Jablotron setup)",
                     "required": false
                   },
                   "segment_id": {
                     "title": "Segment ID",
                     "type": "string",
+                    "description": "ID of a segment assigned in Jablotron setup.",
                     "required": false
                   },
                   "segment_key": {
                     "title": "Segment key",
                     "type": "string",
+                    "description": "Key of a segment assigned in Jablotron setup.",
                     "required": false
                   }
                 }
@@ -159,16 +178,19 @@
                   "name": {
                     "title": "Name",
                     "type": "string",
+                    "description": "Name of the accessory (this will be shown in Homekit and typically corresponds to the name defined in Jablotron setup)",
                     "required": false
                   },
                   "segment_id": {
                     "title": "Segment ID",
                     "type": "string",
+                    "description": "ID of a segment assigned in Jablotron setup.",
                     "required": false
                   },
                   "segment_key": {
                     "title": "Segment key",
                     "type": "string",
+                    "description": "Key of a segment assigned in Jablotron setup.",
                     "required": false
                   }
                 }
