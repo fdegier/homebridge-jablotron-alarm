@@ -254,7 +254,7 @@
         "items": [{
           "key": "services[].outlets",
           "type": "tabarray",
-          "title": "{{ value.name || 'new switch' }}",
+          "title": "{{ value.name || 'new outlet' }}",
           "items": [
             "services[].outlets[].name",
             "services[].outlets[].segment_id",
