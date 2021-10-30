@@ -1,7 +1,7 @@
 {
   "pluginAlias": "Jablotron",
   "pluginType": "platform",
-  "footerDisplay": "Control your Jablotron alarm system from your iOS device using HomeKit and Homebridge, which is available [here](https://github.com/F4stFr3ddy/homebridge-jablotron-alarm.git).",
+  "footerDisplay": "Control your Jablotron alarm system from your iOS device using HomeKit and Homebridge, which is available [here](https://github.com/fdegier/homebridge-jablotron-alarm.git).",
   "schema": {
     "type": "object",
     "properties": {
