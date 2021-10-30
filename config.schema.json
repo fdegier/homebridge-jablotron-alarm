@@ -22,7 +22,7 @@
               "title": "Id",
               "type": "integer",
               "default": 12345,
-              "description": "ID of service obtained by [configuration tool](https://github.com/grzegorz914/homebridge-jablotron-alarm#Identify-Jablotron-services-and-devices).",
+              "description": "ID of service obtained by configuration tool - https://github.com/grzegorz914/homebridge-jablotron-alarm#Identify-Jablotron-services-and-devices.",
               "required": true
             },
             "name": {
