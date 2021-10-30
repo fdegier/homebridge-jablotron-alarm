@@ -178,5 +178,93 @@
         }
       }
     }
-  }
+  },
+  "layout": [{
+    "key": "services",
+    "type": "tabarray",
+    "title": "{{ value.name || 'new service' }}",
+    "items": [
+      "services[].name",
+      "services[].id",
+      {
+        "key": "services[]",
+        "type": "section",
+        "title": "Sections",
+        "expandable": true,
+        "expanded": false,
+        "items": [{
+          "key": "services[].sections",
+          "type": "tabarray",
+          "title": "{{ value.name || 'new section' }}",
+          "items": [
+            "services[].sections[].name",
+            "services[].sections[].segment_id",
+            "services[].sections[].segment_key",
+            "services[].sections[].keyboard_key",
+            "services[].sections[].armedMode",
+            "services[].sections[].partiallyArmedMode"
+          ]
+        }]
+      },
+      {
+        "key": "services[]",
+        "type": "section",
+        "title": "Switches",
+        "expandable": true,
+        "expanded": false,
+        "items": [{
+          "key": "services[].switches",
+          "type": "tabarray",
+          "title": "{{ value.name || 'new switch' }}",
+          "items": [
+            "services[].switches[].name",
+            "services[].switches[].segment_id",
+            "services[].switches[].segment_key"
+          ]
+        }]
+      },
+      {
+        "key": "services[]",
+        "type": "section",
+        "title": "Outlets",
+        "expandable": true,
+        "expanded": false,
+        "items": [{
+          "key": "services[].outlets",
+          "type": "tabarray",
+          "title": "{{ value.name || 'new switch' }}",
+          "items": [
+            "services[].outlets[].name",
+            "services[].outlets[].segment_id",
+            "services[].outlets[].segment_key"
+          ]
+        }]
+      },
+      {
+        "key": "services[]",
+        "type": "section",
+        "title": "Authorization",
+        "expandable": true,
+        "expanded": false,
+        "items": [
+          "services[].username",
+          "services[].password",
+          "services[].pincode"
+        ]
+      },
+      {
+        "key": "services[]",
+        "type": "section",
+        "title": "Advanced Settings",
+        "expandable": true,
+        "expanded": false,
+        "items": [
+          "services[].autoRefresh",
+          "services[].poolInterval",
+          "services[].refreshOnStateChange",
+          "services[].debug"
+        ]
+      }
+    ]
+  }]
 }
