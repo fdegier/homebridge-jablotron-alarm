@@ -53,6 +53,15 @@
                             "segment_id": "PGM_2",
                             "segment_key": "pgm_2"
                         }
+                    ],
+                    "thermometers": [
+                        {
+                            "name": "Thermometer",
+                            "segment_id": "THERMOMETER_3",
+                            "segment_key": "thermometer_3",
+                            "min_temperature": -20,
+                            "max_temperature": 70
+                        }
                     ]
                 }
             ]

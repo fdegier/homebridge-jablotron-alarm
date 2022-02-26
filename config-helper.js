@@ -55,6 +55,13 @@ JablotronConfigHelper.prototype = {
         if (keyboardKey && keyboardKey != null) {
             result.keyboard_key = keyboardKey;
         }
+
+        let temperatureRange = segment['segment_temperature_range'];
+        if (temperatureRange != null) {
+            result.min_temperature = temperatureRange['minTemp'];
+            result.max_temperature = temperatureRange['maxTemp'];
+        }
+
         return result;
     },
 
@@ -75,7 +82,7 @@ JablotronConfigHelper.prototype = {
         let serviceType = this.service_type;
         this.fetchServices(function (serviceId) {
             let payload = {
-                'data': '[{"filter_data":[{"data_type":"section"},{"data_type":"keyboard"},{"data_type":"pgm"}],"service_type": "' + serviceType + '","service_id":' + serviceId + ',"data_group":"serviceData","connect":true,"system":"Android"}]'
+                'data': '[{"filter_data":[{"data_type":"section"},{"data_type":"keyboard"},{"data_type":"pgm"},{"data_type":"thermometer"}],"service_type": "' + serviceType + '","service_id":' + serviceId + ',"data_group":"serviceData","connect":true,"system":"Android"}]'
             };
 
             self.client.doAuthenticatedRequest('/dataUpdate.json', payload, self.sessionId, function (response) {
@@ -89,6 +96,7 @@ JablotronConfigHelper.prototype = {
                 service.sections = [];
                 service.switches = [];
                 service.outlets = [];
+                service.thermometers = [];
 
                 if (self.debug) {
                     self.log("");
@@ -121,6 +129,14 @@ JablotronConfigHelper.prototype = {
                     if (self.isSegmentUsable(segment)) {
                         let accessory = self.createAccessory(segment, null);
                         service.switches.push(accessory);
+                    }
+                });
+
+                segments = response['data']['service_data'][0]['data'][3]['data']['segments'];
+                segments.forEach(function (segment) {
+                    if (self.isSegmentUsable(segment)) {
+                        let accessory = self.createAccessory(segment, null);
+                        service.thermometers.push(accessory);
                     }
                 });
 

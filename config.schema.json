@@ -196,6 +196,45 @@
                   }
                 }
               }
+            },
+            "thermometers": {
+              "title": "Thermometers",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "description": "Name of the accessory (this will be shown in Homekit and typically corresponds to the name defined in Jablotron setup)",
+                    "required": false
+                  },
+                  "segment_id": {
+                    "title": "Segment ID",
+                    "type": "string",
+                    "description": "ID of a segment assigned in Jablotron setup.",
+                    "required": false
+                  },
+                  "segment_key": {
+                    "title": "Segment key",
+                    "type": "string",
+                    "description": "Key of a segment assigned in Jablotron setup.",
+                    "required": false
+                  },
+                  "min_temperature": {
+                    "title": "Min. Temperature",
+                    "type": "number",
+                    "description": "Min. temperature assigned in Jablotron setup.",
+                    "required": false
+                  },
+                  "max_temperature": {
+                    "title": "Max. Temperature",
+                    "type": "number",
+                    "description": "Max. temperature assigned in Jablotron setup.",
+                    "required": false
+                  }
+                }
+              }
             }
           }
         }
@@ -260,6 +299,25 @@
             "services[].outlets[].name",
             "services[].outlets[].segment_id",
             "services[].outlets[].segment_key"
+          ]
+        }]
+      },
+      {
+        "key": "services[]",
+        "type": "section",
+        "title": "Thermometers",
+        "expandable": true,
+        "expanded": false,
+        "items": [{
+          "key": "services[].thermometers",
+          "type": "tabarray",
+          "title": "{{ value.name || 'new thermometer' }}",
+          "items": [
+            "services[].thermometers[].name",
+            "services[].thermometers[].segment_id",
+            "services[].thermometers[].segment_key",
+            "services[].thermometers[].min_temperature",
+            "services[].thermometers[].max_temperature"
           ]
         }]
       },
