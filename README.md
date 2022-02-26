@@ -204,6 +204,15 @@ If the config is empty, add the following to the file, otherwise proceed to chan
                                 "segment_id": "PGM_2",
                                 "segment_key": "pgm_2"
                             }
+                        ],
+                        "thermometers": [
+                            {
+                                "name": "Thermometer",
+                                "segment_id": "THERMOMETER_3",
+                                "segment_key": "thermometer_3",
+                                "min_temperature": -20,
+                                "max_temperature": 70
+                            }
                         ]
                     }
                 ]
@@ -235,17 +244,21 @@ The accessories are of 3 types:
 - **section**: this is standard segment mounted on Jablotron keyboard unit
 - **switch**: this is a switchable (PGM device) accessory connected to Jablotron unit (eg hooter/sirene)
 - **outlet**: this is an outlet (PGM device) connected to Jablotron unit
+- **thermometer**: this is a thermometer connected to Jablotron unit
 
 The configuration above defines:
 - 3 sections/segments
 - 1 switch for hooter/sirene
 - 1 outlet that turns on/off security camera 
+- 1 thermometer
 
 Each accessory needs to be configured using following attributes:
 - **name**: mandatory, name of the accessory (this will be shown in Homekit and typically corresponds to the name defined in Jablotron setup)
 - **segment_id**: mandatory, ID of a segment assigned in Jablotron setup
 - **segment_key**: mandatory, key of a segment assigned in Jablotron setup
 - **keyboard_key**: optional, is used to define a segment keyboard in order to support partially armed state (see below). Please specify the value only if you have Jablotron segment/section configured for partially armed state!
+- **min_temperature**: optional, min. temperature of Jablotron thermometer (returned by [configuration tool](#Identify-Jablotron-services-and-devices))
+- **max_temperature**: optional, max. temperature of Jablotron thermometer (returned by [configuration tool](#Identify-Jablotron-services-and-devices))
 
 ### Support for partially armed state
 If your Jablotron alarm was configured to support partially armed status, ie where single click on segment's arm key partially arms segment and double click on segment's arm key arms segment fully, you are able to configure the same in Homebridge as well.
