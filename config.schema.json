@@ -305,6 +305,25 @@
       {
         "key": "services[]",
         "type": "section",
+        "title": "Thermometers",
+        "expandable": true,
+        "expanded": false,
+        "items": [{
+          "key": "services[].thermometers",
+          "type": "tabarray",
+          "title": "{{ value.name || 'new thermometer' }}",
+          "items": [
+            "services[].thermometers[].name",
+            "services[].thermometers[].segment_id",
+            "services[].thermometers[].segment_key",
+            "services[].thermometers[].min_temperature",
+            "services[].thermometers[].max_temperature"
+          ]
+        }]
+      },
+      {
+        "key": "services[]",
+        "type": "section",
         "title": "Authorization",
         "expandable": true,
         "expanded": false,
