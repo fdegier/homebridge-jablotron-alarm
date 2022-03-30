@@ -4,3 +4,4 @@ node_modules/
 cache.json
 .vscode/settings.json
 *.iml
+venv
