@@ -14,6 +14,12 @@ jobs:
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/
+      - name: 'change version'
+        uses: reedyuk/npm-version@1.1.1
+        with:
+          version: ${{github.ref_name}}"
+          package: 'subproject-directory/'
+          git-tag-version: 'true'
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
