@@ -61,7 +61,7 @@
               "description": "Enables autorefresh mode that automatically polls the Jablotron status in interval defined using **pollInterval** attribute.",
               "required": true
             },
-            "poolInterval": {
+            "pollInterval": {
               "title": "Poll interval",
               "type": "integer",
               "default": 60,
