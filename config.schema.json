@@ -197,6 +197,39 @@
                 }
               }
             },
+            "contact_sensors": {
+              "title": "Contact Sensors",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "description": "Name of the accessory (this will be shown in Homekit and typically corresponds to the name defined in Jablotron setup)",
+                    "required": false
+                  },
+                  "segment_id": {
+                    "title": "Segment ID",
+                    "type": "string",
+                    "description": "ID of a segment assigned in Jablotron setup.",
+                    "required": false
+                  },
+                  "segment_key": {
+                    "title": "Segment key",
+                    "type": "string",
+                    "description": "Key of a segment assigned in Jablotron setup.",
+                    "required": false
+                  },
+                  "reversed_status": {
+                    "title": "Reversed status",
+                    "type": "boolean",
+                    "description": "Reverses the logic for contact opened status. By default plugin sets contact sensor as Open when status is set",
+                    "required": false
+                  }
+                }
+              }
+            },
             "thermometers": {
               "title": "Thermometers",
               "type": "array",

@@ -1,3 +1,5 @@
+// noinspection JSUnresolvedVariable,JSUnresolvedFunction
+
 'use strict';
 
 const JablotronClient = require('./lib/jablotron-client');
@@ -52,7 +54,7 @@ JablotronConfigHelper.prototype = {
         result.name = segment['segment_name'];
         result.segment_id = segment['segment_id'];
         result.segment_key = segment['segment_key'];
-        if (keyboardKey && keyboardKey != null) {
+        if (keyboardKey) {
             result.keyboard_key = keyboardKey;
         }
 
@@ -70,11 +72,7 @@ JablotronConfigHelper.prototype = {
             return false;
         }
 
-        if (segment['segment_status'] != 'ready') {
-            return false;
-        }
-
-        return true;
+        return segment['segment_status'] === 'ready';
     },
 
     getAccessories: function () {
@@ -111,7 +109,7 @@ JablotronConfigHelper.prototype = {
                 let keyboards = response['data']['service_data'][0]['data'][1]['data']['segments'];
                 let keyboardMap = {};
                 keyboards.forEach(function (keyboard) {
-                    if (self.isSegmentUsable(keyboard) && keyboard['segment_type'] == "keyboard" && keyboard['segment_subtype'] == 'section' && keyboard['segment_next_set_state'] == 'partialSet') {
+                    if (self.isSegmentUsable(keyboard) && keyboard['segment_type'] === "keyboard" && keyboard['segment_subtype'] === 'section' && keyboard['segment_next_set_state'] === 'partialSet') {
                         keyboardMap[keyboard['segment_id']] = keyboard['segment_key'];
                     }
                 });
@@ -156,13 +154,13 @@ if (process.argv.length < 4) {
     let service_type = "ja100";
 
     for (let i = 4; i < process.argv.length; i++) {
-        if (process.argv[i] == '-O') {
+        if (process.argv[i] === '-O') {
             service_type = "oasis";
         }
     }
 
     for (let i = 5; i < process.argv.length; i++) {
-        if (process.argv[i] == '-d') {
+        if (process.argv[i] === '-d') {
             debug = true;
         }
     }
