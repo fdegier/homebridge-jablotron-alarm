@@ -252,7 +252,7 @@ The accessories are of 3 types:
 - **switch**: this is a switchable (PGM device) accessory connected to Jablotron unit (eg hooter/sirene)
 - **outlet**: this is an outlet (PGM device) connected to Jablotron unit
 - **thermometer**: this is a thermometer connected to Jablotron unit
-- **contact sensor**: this is a contact sensor (PGM device) connected to Jablotron unit
+- **contact sensor**: this is a PGM device being displayed as a contact sensor connected to Jablotron unit. You will need to configure this in F-link accordingly, 
 
 The configuration above defines:
 - 3 sections/segments
