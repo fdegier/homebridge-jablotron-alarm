@@ -205,6 +205,13 @@ If the config is empty, add the following to the file, otherwise proceed to chan
                                 "segment_key": "pgm_2"
                             }
                         ],
+                        "contact_sensors": [
+                            {
+                                "name": "Living Room Windows",
+                                "segment_id": "PGM_3",
+                                "segment_key": "pgm_3"
+                            }
+                        ],
                         "thermometers": [
                             {
                                 "name": "Thermometer",
@@ -245,11 +252,13 @@ The accessories are of 3 types:
 - **switch**: this is a switchable (PGM device) accessory connected to Jablotron unit (eg hooter/sirene)
 - **outlet**: this is an outlet (PGM device) connected to Jablotron unit
 - **thermometer**: this is a thermometer connected to Jablotron unit
+- **contact sensor**: this is a PGM device being displayed as a contact sensor connected to Jablotron unit. You will need to configure this in F-link accordingly, 
 
 The configuration above defines:
 - 3 sections/segments
 - 1 switch for hooter/sirene
 - 1 outlet that turns on/off security camera 
+- 1 contact sensor for living room windows status
 - 1 thermometer
 
 Each accessory needs to be configured using following attributes:
@@ -259,6 +268,8 @@ Each accessory needs to be configured using following attributes:
 - **keyboard_key**: optional, is used to define a segment keyboard in order to support partially armed state (see below). Please specify the value only if you have Jablotron segment/section configured for partially armed state!
 - **min_temperature**: optional, min. temperature of Jablotron thermometer (returned by [configuration tool](#Identify-Jablotron-services-and-devices))
 - **max_temperature**: optional, max. temperature of Jablotron thermometer (returned by [configuration tool](#Identify-Jablotron-services-and-devices))
+- **reversed_status**: optional and valid for contacts sensors only. By default contact sensor is open when PGM is set and closed when unset. This option reverses the logic so that
+contact sensor is open when PGM is unset and closed when set
 
 ### Support for partially armed state
 If your Jablotron alarm was configured to support partially armed status, ie where single click on segment's arm key partially arms segment and double click on segment's arm key arms segment fully, you are able to configure the same in Homebridge as well.
