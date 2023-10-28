@@ -13,219 +13,16 @@ In the beginning of 2017 I bought and installed a Jablotron JA-100 alarm system 
 If you are unfamiliar with Homekit, it’s Apple’s home automation integration, it basically bundles all of your smart devices in the Home app and lets you control it from 1 app, share access to family and friends, but most importantly provide a secure gateway for remote access and location based automation. See: https://www.apple.com/ios/home/
 
 The objective for the Jablotron Homekit integration is:
-Arm, disarm or partially arm the alarm based on location
-Control PGM Jablotron devices based on location
-Have other devices perform actions based on the status of the alarm
-Include the alarm in scenes
-Control Jablotron from the Home app
-Control Jablotron with Siri
+- Arm, disarm or partially arm the alarm based on location
+- Control PGM Jablotron devices based on location
+- Have other devices perform actions based on the status of the alarm
+- Include the alarm in scenes
+- Control Jablotron from the Home app
+- Control Jablotron with Siri
 
-Since Homekit isn’t enabled on Jablotron we need a bridge to connect Jablotron to Homekit, we will be using Homebridge for this.
+## Sample Homebridge config
 
-Most of this README is written for first time users of Homebridge so feel free to skip most parts if you already have it.
-
-## What is Homebridge?
-Homebridge is a lightweight NodeJS server you can run on your home network that emulates the iOS HomeKit API. It supports Plugins, which are community-contributed modules that provide a basic bridge from HomeKit to various 3rd-party APIs provided by manufacturers of "smart home" devices. See: https://github.com/nfarina/homebridge
-
-## Components
-Components used in this instructions:
-- Raspberry PI Zero W
-- Raspberry Pi Zero case
-- USB charger + Micro USB cable
-- SD card (32gb) with Jessie Lite installed
-- Jablotron JA-101KR LAN w/ GSM and radio
-- Router with WiFi
-
-The above components can be changed out to your preferences, just make sure you check the compatibility with Homebridge.
-
-## Homekit dependencies
-In order to use Apple Homekit you need to make sure you meet Apple’s requirements, most notably the requirements on automation and remote access. See: https://support.apple.com/en-us/HT207057
-
-## Installation options
-- Following along this tutorial should be quite OK, but you have a few options to getting this up and running:
-- Follow along this tutorial
-- Contact us for a prepped SD card or a whole Pi with OS
-- Use an existing Homebridge installation
-- Use Docker
-- Download the Homebridge for Raspberry Pi app which will do all the installation work for you https://itunes.apple.com/nl/app/homebridge-for-raspberrypi/id1123183713?mt=8
-
-## Preparing the OS
-For our OS we will be using Jessie Lite, get the latest version from:
-http://downloads.raspberrypi.org/raspbian_lite/images/
-
-Follow the instruction on how to install it on your SD card:
-https://www.raspberrypi.org/documentation/installation/installing-images/
-
-Please read the included README.txt
-
-After installing the OS on the SD card, perform the following steps:
-Open the SD card in Finder or Explorer and go the root / home folder
-Create an empty file called “ssh.txt”, this will enable us to SSH into the Pi
-
-Create a second file called “wpa_supplicant.conf” with the following contents:
-
-	ctrl_interface=/var/run/wpa_supplicant
-	network={
-	    ssid=“your_wifi_name”
-	    psk=“your_wifi_password”
-	}
-
-This will make sure that the Pi connects to your WiFi.
-
-Alternatively you can use the command line to perform these commands.
-
-## Prepping the Pi
-Insert the SD with OS into the Pi, close the case and hook the power up. Verify that it works, by checking if the Pi’s light is blinking.
-
-Lets get started
-Now that we have all our components and software its time to boot up the Pi for the first time, installing the plugins and connecting it your Homekit. If you have downloaded the prepped OS then skip until the next steps and go straight to “Connecting to Homekit”, if you have an existing Homebridge installation skip to “Installing Jablotron plugin”
-
-## Connecting to the Pi
-After the Pi has booted, open the terminal on MacOs or use an SSH client such as putty on Windows. On MacOS connect via the terminal with the following command:
-
-	ssh pi@raspberrypi.local
-
-The default password should be “raspberry”. After logging in the first thing we will do is change the password by executing:
-
-    passwd
-
-## Installing Homebridge and required packages
-Allright installing Homebirdge can sometimes be a bit difficult, mostly due to different versions of Pi’s, OS’s, etc. So the following steps should help you to get it up and running but its best to check the latest installation guide on and preferably follow that guide: https://github.com/nfarina/homebridge/wiki/Running-HomeBridge-on-a-Raspberry-Pi
-
-Make sure you are connected to the Pi and execute the following commands one by one:
-
-	sudo apt-get update
-	sudo apt-get upgrade
-
-Install Git:
-
-	sudo apt-get install git make
-
-Install Node:
-
-	curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
-	sudo apt-get install -y nodejs
-	sudo apt-get install -y build-essential
-
-Set up NPM:
-
-	mkdir ~/.npm-global
-	npm config set prefix ‘~/.npm-global’
-	export PATH=~/.npm-global/bin:$PATH
-	source ~/.profile
-
-Install Avahi
-
-	sudo apt-get install libavahi-compat-libdnssd-dev
-
-Install Homebridge
-
-	sudo npm install -g --unsafe-perm homebridge
-
-Start Homebridge at boot of the Pi
-
-	sudo apt-get install screen
-
-Edit the file by executing:
-
-	sudo nano /etc/rc.local
-
-Add this line before the exit 0 line:
-
-	su -c "screen -dmS homebridge homebridge" -s /bin/sh pi
-
-Press CRTL + X to save and exit.
-
-## Installing Jablotron plugin
-At this moment the package isn’t on npmjs so we will install it from Github by executing the following command:
-	
-	npm install -g homebridge-jablotron
-
-## Creating the homebridge config
-On the command line and create the config file:
-	
-	nano ~/.homebridge/config.json
-
-If the config is empty, add the following to the file, otherwise proceed to changing the credentials:
-
-    {
-        "bridge": {
-            "name": "Homebridge",
-            "username": "CC:22:3D:E3:CE:30",
-            "port": 51826,
-            "pin": "031-45-155"
-        },
-        "accessories": [],
-        "platforms": [
-            {
-                "platform": "Jablotron",
-                "name": "Jablotron",
-                "services": [
-                    {
-                        "id": 123456,
-                        "name": "Home",
-                        "username": "username",
-                        "password": "passsword",
-                        "pincode": "pincode",
-                        "autoRefresh": true,
-                        "pollInterval": 60,
-                        "refreshOnStateChange": true,
-                        "debug": false,
-                        "sections": [
-                            {
-                                "name": "House",
-                                "segment_id": "STATE_1",
-                                "segment_key": "section_1",
-                                "keyboard_key": "keyboard_2_3",
-                                "partiallyArmedMode": "Night"
-                            },
-                            {
-                                "name": "Cellar",
-                                "segment_id": "STATE_2",
-                                "segment_key": "section_2",
-                                "armedMode": "Home"
-                            },
-                            {
-                                "name": "Terrace",
-                                "segment_id": "STATE_3",
-                                "segment_key": "section_3"
-                            }
-                        ],
-                        "switches": [
-                            {
-                                "name": "Hooter",
-                                "segment_id": "PGM_1",
-                                "segment_key": "pgm_1"
-                            }
-                        ],
-                        "outlets": [
-                            {
-                                "name": "Camera",
-                                "segment_id": "PGM_2",
-                                "segment_key": "pgm_2"
-                            }
-                        ],
-                        "contact_sensors": [
-                            {
-                                "name": "Living Room Windows",
-                                "segment_id": "PGM_3",
-                                "segment_key": "pgm_3"
-                            }
-                        ],
-                        "thermometers": [
-                            {
-                                "name": "Thermometer",
-                                "segment_id": "THERMOMETER_3",
-                                "segment_key": "thermometer_3",
-                                "min_temperature": -20,
-                                "max_temperature": 70
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
-    }
+For an example of the config, see the [sample-config.json](sample-config.json) file in this repository.
 
 ### Configuring Jablotron services
 Based on the output of the [configuration tool](#Identify-Jablotron-services-and-devices) you can decide what services you add to the configuration.
@@ -254,18 +51,9 @@ The accessories are of 3 types:
 - **thermometer**: this is a thermometer connected to Jablotron unit
 - **contact sensor**: this is a PGM device being displayed as a contact sensor connected to Jablotron unit. You will need to configure this in F-link accordingly, 
 
-The configuration above defines:
-- 3 sections/segments
-- 1 switch for hooter/sirene
-- 1 outlet that turns on/off security camera 
-- 1 contact sensor for living room windows status
-- 1 thermometer
-
 Each accessory needs to be configured using following attributes:
 - **name**: mandatory, name of the accessory (this will be shown in Homekit and typically corresponds to the name defined in Jablotron setup)
-- **segment_id**: mandatory, ID of a segment assigned in Jablotron setup
-- **segment_key**: mandatory, key of a segment assigned in Jablotron setup
-- **keyboard_key**: optional, is used to define a segment keyboard in order to support partially armed state (see below). Please specify the value only if you have Jablotron segment/section configured for partially armed state!
+- **Cloud Component ID**: mandatory, ID of a segment assigned in Jablotron setup
 - **min_temperature**: optional, min. temperature of Jablotron thermometer (returned by [configuration tool](#Identify-Jablotron-services-and-devices))
 - **max_temperature**: optional, max. temperature of Jablotron thermometer (returned by [configuration tool](#Identify-Jablotron-services-and-devices))
 - **reversed_status**: optional and valid for contacts sensors only. By default contact sensor is open when PGM is set and closed when unset. This option reverses the logic so that
@@ -283,20 +71,6 @@ partially armed state is mapped to Home in Homekit. For each section you can now
 
 Each section will appear in Homekit with the right number of states. Without partially armed state it would always appear with Off/"Armed" states
 With partially armed state it would appear as Off/"Partially Armed"/"Armed"
-
-## Connecting to Homekit
-On the command line, execute:
-
-	screen -S homebridge
-	homebridge
-
-On your iOS device open “Home”, click on the plus icon in the top right corner, click “add accessory” and scan the QR code displayed in on the command line.
-
-Exit homebridge on the command line by pressing CTRL + Z, followed by executing the command:
-
-	sudo reboot
-
-The Pi will now reboot and after a couple of minutes it will be back online and Homebridge will be up and running.
 
 ## Homekit integration
 The alarm integrates into Homekit as standard security alarm device. Homekit supports 4 states:
@@ -325,16 +99,9 @@ This works every time and has the added benefit of being more secure, alternativ
 If you want to use Siri for controlling the alarm, you need to create a scene, which switches the alarm on or off and then ask Siri to set that scene.
 
 ## Identify Jablotron services and devices
-**Make sure all the segments on the Jablotron unit are disarmed prior running this utility** - this will ensure keyboard detection for partially armed state works as expected:
-To identify Jablotron services and devices (segments and PGMs) run the config-helper.js, this will get all services and related segments that are assigned to your account.
 
-In case you have an Oasis, add the option `-O` but do note that it's not possible to control the sections indivually as the app also does not allow this. You could however control all of them at once.
+In Homebridge, under the Jablotron plugin > advanced settings. Enable Debug, this will start printing all sections, PGM devices and thermometers to the log including
+their IDs. You can then use these IDs to configure your Homebridge config.
 
-    cd /usr/local/lib/node_modules/homebridge-jablotron
-    node config-helper.js username password
-
-Alternatively you can use the config helper:
-
-Source code: https://github.com/fdegier/Homebridge-Jablotron-Congig-helper/tree/main
 ## Troubleshooting
 - Jablontron cloud services require users' input to agree with its terms. Without confirmed agreement with these terms Jablotron Homebridge plugin won't work and will show Service Unavailable in the logs. To agree with Jablotron cloud terms sign into [MyJablotron](https://www.jablonet.net) using account configured for the plugin and the agreement comes up as first screen - click `I Agree` and the plugin starts working again
