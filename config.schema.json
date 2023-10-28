@@ -96,7 +96,7 @@
                     "required": true
                   },
                   "segment_id": {
-                    "title": "Segment ID",
+                    "title": "Cloud Component ID",
                     "type": "string",
                     "default": "SEC-12345678",
                     "description": "ID of a segment assigned in Jablotron setup.",
@@ -142,7 +142,7 @@
                     "required": false
                   },
                   "segment_id": {
-                    "title": "Segment ID",
+                    "title": "Cloud Component ID",
                     "type": "string",
                     "description": "ID of a segment assigned in Jablotron setup.",
                     "required": false
@@ -163,7 +163,7 @@
                     "required": false
                   },
                   "segment_id": {
-                    "title": "Segment ID",
+                    "title": "Cloud Component ID",
                     "type": "string",
                     "description": "ID of a segment assigned in Jablotron setup.",
                     "required": false
@@ -184,7 +184,7 @@
                     "required": false
                   },
                   "segment_id": {
-                    "title": "Segment ID",
+                    "title": "Cloud Component ID",
                     "type": "string",
                     "description": "ID of a segment assigned in Jablotron setup.",
                     "required": false
@@ -211,7 +211,7 @@
                     "required": false
                   },
                   "segment_id": {
-                    "title": "Segment ID",
+                    "title": "Cloud Component ID",
                     "type": "string",
                     "description": "ID of a segment assigned in Jablotron setup.",
                     "required": false
@@ -255,7 +255,7 @@
           "title": "{{ value.name || 'new section' }}",
           "items": [
             "services[].sections[].name",
-            "services[].sections[].segment_id",,
+            "services[].sections[].segment_id",
             "services[].sections[].armedMode",
             "services[].sections[].partiallyArmedMode"
           ]

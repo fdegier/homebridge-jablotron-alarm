@@ -24,34 +24,34 @@
                     "sections": [
                         {
                             "name": "House",
-                            "segment_id": "SEC-12345678",
+                            "cloud-component-id": "SEC-12345678",
                             "partiallyArmedMode": "Home"
                         },
                         {
                             "name": "Cellar",
-                            "segment_id": "SEC-12345678"
+                            "cloud-component-id": "SEC-12345678"
                         },
                         {
                             "name": "Terrace",
-                            "segment_id": "SEC-12345678"
+                            "cloud-component-id": "SEC-12345678"
                         }
                     ],
                     "switches": [
                         {
                             "name": "Siren",
-                            "segment_id": "PG-12345678"
+                            "cloud-component-id": "PG-12345678"
                         }
                     ],
                     "outlets": [
                         {
                             "name": "Camera",
-                            "segment_id": "PG-12345678"
+                            "cloud-component-id": "PG-12345678"
                         }
                     ],
                     "thermometers": [
                         {
                             "name": "Thermometer",
-                            "segment_id": "THM-12345678",
+                            "cloud-component-id": "THM-12345678",
                             "min_temperature": -20,
                             "max_temperature": 70
                         }
