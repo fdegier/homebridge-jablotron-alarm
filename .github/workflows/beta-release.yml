@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - '*.*.*-beta*'
+    branches:
+      - beta-release
 
 jobs:
   build:
