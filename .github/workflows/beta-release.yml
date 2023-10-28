@@ -1,9 +1,11 @@
-name: Publish NPM
+name: Node-CI Beta
 
 on:
   push:
     tags:
-      - '*.*.*'
+      - '*.*.*-beta*'
+    branches:
+      - beta-release
 
 jobs:
   build:
@@ -14,6 +16,6 @@ jobs:
         with:
           node-version: 18
           registry-url: https://registry.npmjs.org/
-      - run: npm publish
+      - run: npm publish --tag beta
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
