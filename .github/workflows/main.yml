@@ -14,6 +14,26 @@ jobs:
         with:
           node-version: 18
           registry-url: https://registry.npmjs.org/
+      
+      - name: Configure Git user
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Determine version bump
+        id: determine_version_bump
+        run: |
+          if [[ $(git log -1 --pretty=%B) =~ "minor" ]]; then
+            echo "::set-output name=bump::minor"
+          elif [[ $(git log -1 --pretty=%B) =~ "major" ]]; then
+            echo "::set-output name=bump::major"
+          else
+            echo "::set-output name=bump::patch"
+          fi
+      
+      - name: Bump version
+        run: npm version ${{ steps.determine_version_bump.outputs.bump }}
+
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
