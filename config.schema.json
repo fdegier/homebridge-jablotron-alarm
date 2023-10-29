@@ -331,7 +331,7 @@
         "expanded": false,
         "items": [
           "services[].autoRefresh",
-          "services[].poolInterval",
+          "services[].pollInterval",
           "services[].refreshOnStateChange",
           "services[].debug"
         ]
