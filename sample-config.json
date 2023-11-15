@@ -24,41 +24,34 @@
                     "sections": [
                         {
                             "name": "House",
-                            "segment_id": "STATE_1",
-                            "segment_key": "section_1",
-                            "keyboard_key": "keyboard_2_3",
+                            "cloud-component-id": "SEC-12345678",
                             "partiallyArmedMode": "Home"
                         },
                         {
                             "name": "Cellar",
-                            "segment_id": "STATE_2",
-                            "segment_key": "section_2"
+                            "cloud-component-id": "SEC-12345678"
                         },
                         {
                             "name": "Terrace",
-                            "segment_id": "STATE_3",
-                            "segment_key": "section_3"
+                            "cloud-component-id": "SEC-12345678"
                         }
                     ],
                     "switches": [
                         {
                             "name": "Siren",
-                            "segment_id": "PGM_1",
-                            "segment_key": "pgm_1"
+                            "cloud-component-id": "PG-12345678"
                         }
                     ],
                     "outlets": [
                         {
                             "name": "Camera",
-                            "segment_id": "PGM_2",
-                            "segment_key": "pgm_2"
+                            "cloud-component-id": "PG-12345678"
                         }
                     ],
                     "thermometers": [
                         {
                             "name": "Thermometer",
-                            "segment_id": "THERMOMETER_3",
-                            "segment_key": "thermometer_3",
+                            "cloud-component-id": "THM-12345678",
                             "min_temperature": -20,
                             "max_temperature": 70
                         }
