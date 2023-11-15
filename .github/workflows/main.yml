@@ -3,7 +3,7 @@ name: Publish NPM
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - '*.*.*'
 
 jobs:
   build:
@@ -20,12 +20,6 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
       
-      - name: Bump version
-        run: npm version from-git
-
-      - name: Commit and push changes
-        run: git push origin ${GITHUB_REF#refs/tags/}
-
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
