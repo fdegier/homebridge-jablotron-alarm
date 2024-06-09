@@ -96,25 +96,11 @@
                     "required": true
                   },
                   "segment_id": {
-                    "title": "Segment ID",
+                    "title": "Cloud Component ID",
                     "type": "string",
-                    "default": "STATE_1",
+                    "default": "SEC-12345678",
                     "description": "ID of a segment assigned in Jablotron setup.",
                     "required": true
-                  },
-                  "segment_key": {
-                    "title": "Segment key",
-                    "type": "string",
-                    "default": "section_1",
-                    "description": "Key of a segment assigned in Jablotron setup.",
-                    "required": true
-                  },
-                  "keyboard_key": {
-                    "title": "Keyboard key",
-                    "type": "string",
-                    "default": "keyboard_2_3",
-                    "description": "Is used to define a segment keyboard in order to support partially armed state (see below). Please specify the value only if you have Jablotron segment/section configured for partially armed state!.",
-                    "required": false
                   },
                   "armedMode": {
                     "title": "Armed mode",
@@ -156,15 +142,9 @@
                     "required": false
                   },
                   "segment_id": {
-                    "title": "Segment ID",
+                    "title": "Cloud Component ID",
                     "type": "string",
                     "description": "ID of a segment assigned in Jablotron setup.",
-                    "required": false
-                  },
-                  "segment_key": {
-                    "title": "Segment key",
-                    "type": "string",
-                    "description": "Key of a segment assigned in Jablotron setup.",
                     "required": false
                   }
                 }
@@ -183,15 +163,9 @@
                     "required": false
                   },
                   "segment_id": {
-                    "title": "Segment ID",
+                    "title": "Cloud Component ID",
                     "type": "string",
                     "description": "ID of a segment assigned in Jablotron setup.",
-                    "required": false
-                  },
-                  "segment_key": {
-                    "title": "Segment key",
-                    "type": "string",
-                    "description": "Key of a segment assigned in Jablotron setup.",
                     "required": false
                   }
                 }
@@ -210,15 +184,9 @@
                     "required": false
                   },
                   "segment_id": {
-                    "title": "Segment ID",
+                    "title": "Cloud Component ID",
                     "type": "string",
                     "description": "ID of a segment assigned in Jablotron setup.",
-                    "required": false
-                  },
-                  "segment_key": {
-                    "title": "Segment key",
-                    "type": "string",
-                    "description": "Key of a segment assigned in Jablotron setup.",
                     "required": false
                   },
                   "reversed_status": {
@@ -243,15 +211,9 @@
                     "required": false
                   },
                   "segment_id": {
-                    "title": "Segment ID",
+                    "title": "Cloud Component ID",
                     "type": "string",
                     "description": "ID of a segment assigned in Jablotron setup.",
-                    "required": false
-                  },
-                  "segment_key": {
-                    "title": "Segment key",
-                    "type": "string",
-                    "description": "Key of a segment assigned in Jablotron setup.",
                     "required": false
                   },
                   "min_temperature": {
@@ -294,8 +256,6 @@
           "items": [
             "services[].sections[].name",
             "services[].sections[].segment_id",
-            "services[].sections[].segment_key",
-            "services[].sections[].keyboard_key",
             "services[].sections[].armedMode",
             "services[].sections[].partiallyArmedMode"
           ]
@@ -313,8 +273,7 @@
           "title": "{{ value.name || 'new switch' }}",
           "items": [
             "services[].switches[].name",
-            "services[].switches[].segment_id",
-            "services[].switches[].segment_key"
+            "services[].switches[].segment_id"
           ]
         }]
       },
@@ -330,8 +289,7 @@
           "title": "{{ value.name || 'new outlet' }}",
           "items": [
             "services[].outlets[].name",
-            "services[].outlets[].segment_id",
-            "services[].outlets[].segment_key"
+            "services[].outlets[].segment_id"
           ]
         }]
       },
@@ -348,7 +306,6 @@
           "items": [
             "services[].thermometers[].name",
             "services[].thermometers[].segment_id",
-            "services[].thermometers[].segment_key",
             "services[].thermometers[].min_temperature",
             "services[].thermometers[].max_temperature"
           ]
@@ -374,7 +331,7 @@
         "expanded": false,
         "items": [
           "services[].autoRefresh",
-          "services[].poolInterval",
+          "services[].pollInterval",
           "services[].refreshOnStateChange",
           "services[].debug"
         ]

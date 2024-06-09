@@ -6,16 +6,34 @@ on:
       - '*.*.*-beta*'
     branches:
       - beta-release
+      - upgrade-19
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
       - uses: actions/setup-node@v1
         with:
           node-version: 18
           registry-url: https://registry.npmjs.org/
-      - run: npm publish --tag beta
+      
+      - name: Configure Git user
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Bump version
+        run: npm version prerelease
+      
+      - name: Commit and push changes
+        run: git push origin ${GITHUB_REF#refs/heads/}
+      
+      - name: Publish NPM
+        run: npm publish --tag beta
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
