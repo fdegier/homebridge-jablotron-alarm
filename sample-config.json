@@ -21,6 +21,7 @@
                     "pollInterval": 60,
                     "refreshOnStateChange": true,
                     "debug": false,
+                    "debugPayload": false,
                     "sections": [
                         {
                             "name": "House",
