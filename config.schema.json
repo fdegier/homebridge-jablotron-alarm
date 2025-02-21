@@ -82,6 +82,13 @@
               "description": "Provides more verbose and detailed logging. Set it to true in case of some issues only!",
               "required": false
             },
+            "debugPayload": {
+              "title": "Debug Payload",
+              "type": "boolean",
+              "default": true,
+              "description": "Provides response payload logging. Set it to true in case of some issues only!",
+              "required": false
+            },
             "sections": {
               "title": "Sections",
               "type": "array",
