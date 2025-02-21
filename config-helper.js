@@ -65,6 +65,9 @@ JablotronConfigHelper.prototype = {
         } else {
             result.segment_id = segment['cloud-component-id'];
         }
+        if (true === segment['partial-arm-enabled']) {
+            result.partiallyArmedMode = 'Home'
+        }
         return result;
     },
 
