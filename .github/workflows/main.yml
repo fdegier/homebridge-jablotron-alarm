@@ -23,7 +23,10 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-      
+
+      - name: Bump version
+        run: npm version ${{ github.ref_name }}
+
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
