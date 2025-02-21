@@ -28,7 +28,7 @@ jobs:
           git config --local user.name "GitHub Action"
 
       - name: Bump version
-        run: npm version prerelease
+        run: npm version prerelease && echo version=${{ github.ref_name }}
       
       - name: Commit and push changes
         run: git push origin ${GITHUB_REF#refs/heads/}
