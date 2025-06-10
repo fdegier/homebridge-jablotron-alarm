@@ -20,6 +20,9 @@ The objective for the Jablotron Homekit integration is:
 - Control Jablotron from the Home app
 - Control Jablotron with Siri
 
+## Homebridge Your Plugin
+This plugin is compatible with Homebridge v2.0.0 and later.
+
 ## Sample Homebridge config
 
 For an example of the config, see the [sample-config.json](sample-config.json) file in this repository.
