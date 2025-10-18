@@ -19,6 +19,11 @@ function JablotronConfigHelper(username, password, service_type, log, debug) {
 }
 
 JablotronConfigHelper.prototype = {
+    tryHandleError: function (error) {
+        this.log("ERROR: " + JSON.stringify(error));
+        return false;
+    },
+
     fetchSessionId: function (callback) {
         let payload = {
             'login': this.username,
