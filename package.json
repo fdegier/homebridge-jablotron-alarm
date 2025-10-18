@@ -13,8 +13,8 @@
     "homekit"
   ],
   "engines": {
-    "node": ">=0.12.0",
-    "homebridge": ">=0.2.0"
+    "node": ">=18.0.0",
+    "homebridge": ">=1.8.0 || >=2.0.0-beta.0"
   },
   "dependencies": {
     "moment": ">=2.11.2"
