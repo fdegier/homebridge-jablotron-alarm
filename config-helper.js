@@ -49,6 +49,10 @@ JablotronConfigHelper.prototype = {
         }
 
         this.fetchSessionId(function (sessionId) {
+            if (!sessionId) {
+                self.log("ERROR: Failed to authenticate. Please check your credentials.");
+                return;
+            }
             self.client.doAuthenticatedRequest('/' + "JA100" + '/serviceListGet.json', payload, sessionId, function (response) {
                 let services = response['data']['services'];
                 for (let i = 0; i < services.length; i++) {
