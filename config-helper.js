@@ -19,6 +19,11 @@ function JablotronConfigHelper(username, password, service_type, log, debug) {
 }
 
 JablotronConfigHelper.prototype = {
+    tryHandleError: function (error) {
+        this.log("ERROR: " + JSON.stringify(error));
+        return false;
+    },
+
     fetchSessionId: function (callback) {
         let payload = {
             'login': this.username,
@@ -51,7 +56,7 @@ JablotronConfigHelper.prototype = {
                     callback(serviceId);
                 }
             }, function (error) {
-                console.log(error)
+                self.tryHandleError(error);
             });
         });
     },
@@ -124,7 +129,7 @@ JablotronConfigHelper.prototype = {
 
                 self.printConfig(SECTIONS);
             }, function (error) {
-                console.log(error)
+                self.tryHandleError(error);
             });
 
             self.client.doAuthenticatedRequest('/' + "JA100" + '/programmableGatesGet.json', payload, self.sessionId, function (response) {
@@ -142,7 +147,7 @@ JablotronConfigHelper.prototype = {
 
                 self.printConfig(PGS);
             }, function (error) {
-                console.log(error)
+                self.tryHandleError(error);
             });
 
             self.client.doAuthenticatedRequest('/' + "JA100" + '/thermoDevicesGet.json', payload, self.sessionId, function (response) {
@@ -160,7 +165,7 @@ JablotronConfigHelper.prototype = {
 
                 self.printConfig(THERMOMETERS);
             }, function (error) {
-                console.log(error)
+                self.tryHandleError(error);
             });
         });
     },

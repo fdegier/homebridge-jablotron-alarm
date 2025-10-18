@@ -25,13 +25,13 @@ The objective for the Jablotron Homekit integration is:
 For an example of the config, see the [sample-config.json](sample-config.json) file in this repository.
 
 ### Configuring Jablotron services
-Based on the output of the [configuration tool](#Identify-Jablotron-services-and-devices) you can decide what services you add to the configuration.
+Based on the output of the [configuration tool](#identify-jablotron-services-and-devices) you can decide what services you add to the configuration.
 Typically there is single service configured (eg for home) but some people might have more services defined (eg home & office)
 
 MAKE SURE YOU HAVE ACCEPTED THE JABLOTRON TERMS OF SERVICE OR YOUR ACCOUNT WILL NOT WORK.
 
 Each service needs to be configured following attributes:
-- **id**: mandatory, ID of service obtained by [configuration tool](#Identify-Jablotron-services-and-devices)
+- **id**: mandatory, ID of service obtained by [configuration tool](#identify-jablotron-services-and-devices)
 - **name**: mandatory, defines a name of a service
 - **username**: mandatory, your Jablotron username, it is advised to create a new account for the sole purpose of controlling the alarm via Siri and limiting the authorization on that account.
 - **password**: mandatory, corresponding Jablotron password
@@ -42,7 +42,7 @@ Each service needs to be configured following attributes:
 - **debug**: optional [default value false], provides more verbose and detailed logging. Set it to true in case of some issues only!
 
 ### Configuring Jablotron sections & accessories
-For each service there needs to be at least one accessory defined. The available accessories can be obtained using [configuration tool](#Identify-Jablotron-services-and-devices)
+For each service there needs to be at least one accessory defined. The available accessories can be obtained using [configuration tool](#identify-jablotron-services-and-devices)
 
 The accessories are of 3 types:
 - **section**: this is standard segment mounted on Jablotron keyboard unit
@@ -54,14 +54,14 @@ The accessories are of 3 types:
 Each accessory needs to be configured using following attributes:
 - **name**: mandatory, name of the accessory (this will be shown in Homekit and typically corresponds to the name defined in Jablotron setup)
 - **Cloud Component ID**: mandatory, ID of a segment assigned in Jablotron setup
-- **min_temperature**: optional, min. temperature of Jablotron thermometer (returned by [configuration tool](#Identify-Jablotron-services-and-devices))
-- **max_temperature**: optional, max. temperature of Jablotron thermometer (returned by [configuration tool](#Identify-Jablotron-services-and-devices))
+- **min_temperature**: optional, min. temperature of Jablotron thermometer (returned by [configuration tool](#identify-jablotron-services-and-devices))
+- **max_temperature**: optional, max. temperature of Jablotron thermometer (returned by [configuration tool](#identify-jablotron-services-and-devices))
 - **reversed_status**: optional and valid for contacts sensors only. By default contact sensor is open when PGM is set and closed when unset. This option reverses the logic so that
 contact sensor is open when PGM is unset and closed when set
 
 ### Support for partially armed state
 If your Jablotron alarm was configured to support partially armed status, ie where single click on segment's arm key partially arms segment and double click on segment's arm key arms segment fully, you are able to configure the same in Homebridge as well.
-All you need to know is keyboard key of segment's keyboard. To obtain this information proceed with steps for [identifying Jablotron services and devices](#Identify-Jablotron-services-and-devices).
+All you need to know is keyboard key of segment's keyboard. To obtain this information proceed with steps for [identifying Jablotron services and devices](#identify-jablotron-services-and-devices).
 
 ### Mapping of Security System States
 For sections you can now override mapping of armed/partially armed states to Homekit states. By default armed state is mapped to Away and
@@ -100,8 +100,27 @@ If you want to use Siri for controlling the alarm, you need to create a scene, w
 
 ## Identify Jablotron services and devices
 
-In Homebridge, under the Jablotron plugin > advanced settings. Enable Debug, this will start printing all sections, PGM devices and thermometers to the log including
-their IDs. You can then use these IDs to configure your Homebridge config.
+There are two ways to identify your Jablotron services and devices:
+
+### Option 1: Using the Configuration Helper Tool (Recommended)
+
+Run the `config-helper.js` script with your Jablotron credentials:
+
+```bash
+node config-helper.js <username> <password>
+```
+
+For more detailed debug output, add the `-d` flag:
+
+```bash
+node config-helper.js <username> <password> -d
+```
+
+This will output a JSON configuration template with all your available services, sections, PGM devices (switches/outlets), and thermometers including their IDs. You can use this output as a starting point for your Homebridge configuration.
+
+### Option 2: Using Homebridge Debug Mode
+
+In Homebridge, under the Jablotron plugin > advanced settings, enable Debug. This will start printing all sections, PGM devices and thermometers to the log including their IDs. You can then use these IDs to configure your Homebridge config.
 
 ## Troubleshooting
 - Jablontron cloud services require users' input to agree with its terms. Without confirmed agreement with these terms Jablotron Homebridge plugin won't work and will show Service Unavailable in the logs. To agree with Jablotron cloud terms sign into [MyJablotron](https://www.jablonet.net) using account configured for the plugin and the agreement comes up as first screen - click `I Agree` and the plugin starts working again
