@@ -3,7 +3,7 @@
   "pluginType": "platform",
   "singular": true,
   "headerDisplay": "This plugin works with Jablotron Alarms.\n\n1. Open the Home <img src='https://user-images.githubusercontent.com/3979615/78010622-4ea1d380-738e-11ea-8a17-e6a465eeec35.png' height='16.42px'> app on your device.\n2. Tap the Home tab, then tap <img src='https://user-images.githubusercontent.com/3979615/78010869-9aed1380-738e-11ea-9644-9f46b3633026.png' height='16.42px'>.\n3. Tap *Add Accessory*, and select *I Don't Have a Code or select More Options*.\n4. Select Accessory and Enter the Homebridge PIN, or scan the QR code in Homebridge UI.",
-  "footerDisplay": "Control your Jablotron alarm system from your iOS device using HomeKit and Homebridge, which is available [here](https://github.com/fdegier/homebridge-jablotron-alarm.git).",
+  "footerDisplay": "Control your Jablotron alarm system from your iOS device using HomeKit and Homebridge. Updated fork available [here](https://github.com/jdegouw/homebridge-jablotron-alarm).",
   "schema": {
     "type": "object",
     "properties": {
@@ -12,6 +12,12 @@
         "type": "string",
         "default": "Jablotron",
         "required": true
+      },
+      "childBridge": {
+        "title": "Run this plugin in a Child Bridge",
+        "description": "Recommended for better stability. The plugin will run in a separate process.",
+        "type": "boolean",
+        "default": false
       },
       "services": {
         "title": "Services",
@@ -23,7 +29,7 @@
               "title": "Id",
               "type": "integer",
               "default": 12345,
-              "description": "ID of service obtained by configuration tool - https://github.com/fdegier/homebridge-jablotron-alarm#Identify-Jablotron-services-and-devices.",
+              "description": "ID of service obtained by configuration tool.",
               "required": true
             },
             "name": {
@@ -37,7 +43,7 @@
               "title": "User name",
               "type": "string",
               "default": "username",
-              "description": "Your Jablotron username, it is advised to create a new account for the sole purpose of controlling the alarm via Siri and limiting the authorization on that account.",
+              "description": "Your Jablotron username. It is advised to create a new account for this purpose.",
               "required": true
             },
             "password": {
@@ -58,291 +64,83 @@
               "title": "Auto refresh",
               "type": "boolean",
               "default": true,
-              "description": "Enables autorefresh mode that automatically polls the Jablotron status in interval defined using **pollInterval** attribute.",
+              "description": "Enables autorefresh mode that automatically polls the Jablotron status.",
               "required": true
             },
             "pollInterval": {
               "title": "Poll interval",
               "type": "integer",
               "default": 60,
-              "description": "Define an interval (in seconds) in which plugin periodically checks for service's and its accessories' states.",
+              "description": "Interval (in seconds) to check the status of the alarm and accessories.",
               "required": true
             },
             "refreshOnStateChange": {
               "title": "Refresh on state change",
               "type": "boolean",
               "default": true,
-              "description": "Eenables automatic refresh upon arm/disarm. This is typically used if you have other Jablotron accessories (eg outlets) set up and configured to automatically switch on/off based on alarm state.",
+              "description": "Automatically refresh after arming or disarming.",
               "required": true
             },
             "debug": {
               "title": "Debug",
               "type": "boolean",
-              "default": true,
-              "description": "Provides more verbose and detailed logging. Set it to true in case of some issues only!",
+              "default": false,
+              "description": "Enable verbose logging. Only use when troubleshooting.",
               "required": false
             },
             "debugPayload": {
               "title": "Debug Payload",
               "type": "boolean",
-              "default": true,
-              "description": "Provides response payload logging. Set it to true in case of some issues only!",
+              "default": false,
+              "description": "Log full response payloads. Only use when troubleshooting.",
               "required": false
             },
-            "sections": {
-              "title": "Sections",
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "title": "House",
-                    "type": "string",
-                    "default": "House",
-                    "description": "Name of the accessory (this will be shown in Homekit and typically corresponds to the name defined in Jablotron setup)",
-                    "required": true
-                  },
-                  "segment_id": {
-                    "title": "Cloud Component ID",
-                    "type": "string",
-                    "default": "SEC-12345678",
-                    "description": "ID of a segment assigned in Jablotron setup.",
-                    "required": true
-                  },
-                  "armedMode": {
-                    "title": "Armed mode",
-                    "type": "string",
-                    "default": "Away",
-                    "description": "Homekit mapping of armed state. Can be set to one of Home/Night/Away.",
-                    "required": false,
-                    "enum": [
-                      "Home",
-                      "Night",
-                      "Away"
-                    ]
-                  },
-                  "partiallyArmedMode": {
-                    "title": "Partially armed mode",
-                    "type": "string",
-                    "default": "Home",
-                    "description": "Homekit mapping of partially armed state. Can be set to one of Home/Night/Away.",
-                    "required": false,
-                    "enum": [
-                      "Home",
-                      "Night",
-                      "Away"
-                    ]
-                  }
-                }
-              }
-            },
-            "switches": {
-              "title": "Switches",
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "title": "Name",
-                    "type": "string",
-                    "description": "Name of the accessory (this will be shown in Homekit and typically corresponds to the name defined in Jablotron setup)",
-                    "required": false
-                  },
-                  "segment_id": {
-                    "title": "Cloud Component ID",
-                    "type": "string",
-                    "description": "ID of a segment assigned in Jablotron setup.",
-                    "required": false
-                  }
-                }
-              }
-            },
-            "outlets": {
-              "title": "Outlets",
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "title": "Name",
-                    "type": "string",
-                    "description": "Name of the accessory (this will be shown in Homekit and typically corresponds to the name defined in Jablotron setup)",
-                    "required": false
-                  },
-                  "segment_id": {
-                    "title": "Cloud Component ID",
-                    "type": "string",
-                    "description": "ID of a segment assigned in Jablotron setup.",
-                    "required": false
-                  }
-                }
-              }
-            },
-            "contact_sensors": {
-              "title": "Contact Sensors",
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "title": "Name",
-                    "type": "string",
-                    "description": "Name of the accessory (this will be shown in Homekit and typically corresponds to the name defined in Jablotron setup)",
-                    "required": false
-                  },
-                  "segment_id": {
-                    "title": "Cloud Component ID",
-                    "type": "string",
-                    "description": "ID of a segment assigned in Jablotron setup.",
-                    "required": false
-                  },
-                  "reversed_status": {
-                    "title": "Reversed status",
-                    "type": "boolean",
-                    "description": "Reverses the logic for contact opened status. By default plugin sets contact sensor as Open when status is set",
-                    "required": false
-                  }
-                }
-              }
-            },
-            "thermometers": {
-              "title": "Thermometers",
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "title": "Name",
-                    "type": "string",
-                    "description": "Name of the accessory (this will be shown in Homekit and typically corresponds to the name defined in Jablotron setup)",
-                    "required": false
-                  },
-                  "segment_id": {
-                    "title": "Cloud Component ID",
-                    "type": "string",
-                    "description": "ID of a segment assigned in Jablotron setup.",
-                    "required": false
-                  },
-                  "min_temperature": {
-                    "title": "Min. Temperature",
-                    "type": "number",
-                    "description": "Min. temperature assigned in Jablotron setup.",
-                    "required": false
-                  },
-                  "max_temperature": {
-                    "title": "Max. Temperature",
-                    "type": "number",
-                    "description": "Max. temperature assigned in Jablotron setup.",
-                    "required": false
-                  }
-                }
-              }
-            }
+            "sections": { ... },
+            "switches": { ... },
+            "outlets": { ... },
+            "contact_sensors": { ... },
+            "thermometers": { ... }
           }
         }
       }
     }
   },
-  "layout": [{
-    "key": "services",
-    "type": "tabarray",
-    "title": "{{ value.name || 'new service' }}",
-    "items": [
-      "services[].name",
-      "services[].id",
-      {
-        "key": "services[]",
-        "type": "section",
-        "title": "Sections",
-        "expandable": true,
-        "expanded": false,
-        "items": [{
-          "key": "services[].sections",
-          "type": "tabarray",
-          "title": "{{ value.name || 'new section' }}",
+  "layout": [
+    {
+      "key": "services",
+      "type": "tabarray",
+      "title": "{{ value.name || 'new service' }}",
+      "items": [
+        "services[].name",
+        "services[].id",
+        {
+          "key": "services[]",
+          "type": "section",
+          "title": "Authorization",
+          "expandable": true,
+          "expanded": false,
           "items": [
-            "services[].sections[].name",
-            "services[].sections[].segment_id",
-            "services[].sections[].armedMode",
-            "services[].sections[].partiallyArmedMode"
+            "services[].username",
+            "services[].password",
+            "services[].pincode"
           ]
-        }]
-      },
-      {
-        "key": "services[]",
-        "type": "section",
-        "title": "Switches",
-        "expandable": true,
-        "expanded": false,
-        "items": [{
-          "key": "services[].switches",
-          "type": "tabarray",
-          "title": "{{ value.name || 'new switch' }}",
+        },
+        {
+          "key": "services[]",
+          "type": "section",
+          "title": "Advanced Settings",
+          "expandable": true,
+          "expanded": false,
           "items": [
-            "services[].switches[].name",
-            "services[].switches[].segment_id"
+            "services[].autoRefresh",
+            "services[].pollInterval",
+            "services[].refreshOnStateChange",
+            "services[].debug",
+            "services[].debugPayload"
           ]
-        }]
-      },
-      {
-        "key": "services[]",
-        "type": "section",
-        "title": "Outlets",
-        "expandable": true,
-        "expanded": false,
-        "items": [{
-          "key": "services[].outlets",
-          "type": "tabarray",
-          "title": "{{ value.name || 'new outlet' }}",
-          "items": [
-            "services[].outlets[].name",
-            "services[].outlets[].segment_id"
-          ]
-        }]
-      },
-      {
-        "key": "services[]",
-        "type": "section",
-        "title": "Thermometers",
-        "expandable": true,
-        "expanded": false,
-        "items": [{
-          "key": "services[].thermometers",
-          "type": "tabarray",
-          "title": "{{ value.name || 'new thermometer' }}",
-          "items": [
-            "services[].thermometers[].name",
-            "services[].thermometers[].segment_id",
-            "services[].thermometers[].min_temperature",
-            "services[].thermometers[].max_temperature"
-          ]
-        }]
-      },
-      {
-        "key": "services[]",
-        "type": "section",
-        "title": "Authorization",
-        "expandable": true,
-        "expanded": false,
-        "items": [
-          "services[].username",
-          "services[].password",
-          "services[].pincode"
-        ]
-      },
-      {
-        "key": "services[]",
-        "type": "section",
-        "title": "Advanced Settings",
-        "expandable": true,
-        "expanded": false,
-        "items": [
-          "services[].autoRefresh",
-          "services[].pollInterval",
-          "services[].refreshOnStateChange",
-          "services[].debug"
-        ]
-      }
-    ]
-  }]
+        }
+      ]
+    },
+    "childBridge"
+  ]
 }

@@ -1,9 +1,9 @@
 {
   "name": "homebridge-jablotron",
-  "version": "3.1.4",
+  "version": "3.2.0",
   "description": "Control your Jablotron alarm system from your iOS device using HomeKit and Homebridge.",
   "license": "MIT",
-  "homepage": "https://github.com/fdegier/homebridge-jablotron-alarm#readme",
+  "homepage": "https://github.com/jdegouw/homebridge-jablotron-alarm",
   "keywords": [
     "homebridge-plugin",
     "homebridge",
@@ -13,23 +13,24 @@
     "homekit"
   ],
   "engines": {
-    "node": ">=0.12.0",
-    "homebridge": ">=0.2.0"
+    "node": ">=18.0.0",
+    "homebridge": "^1.6.0 || ^2.0.0"
   },
   "dependencies": {
-    "moment": ">=2.11.2"
+    "moment": "^2.30.1"
   },
   "author": "Fred de Gier",
   "contributors": [
     "Vladimír Aubrecht",
-    "Michal Snitily"
+    "Michal Snitily",
+    "Jeroen de Gouw"
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com:fdegier/homebridge-jablotron-alarm.git"
+    "url": "git://github.com/jdegouw/homebridge-jablotron-alarm.git"
   },
   "bugs": {
-    "url": "https://github.com/fdegier/homebridge-jablotron-alarm/issues"
+    "url": "https://github.com/jdegouw/homebridge-jablotron-alarm/issues"
   },
   "main": "lib/index.js",
   "files": [
@@ -37,11 +38,5 @@
     "config-helper.js",
     "sample-config.json",
     "config.schema.json"
-  ],
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "devDependencies": {
-    "jest": "^29.7.0"
-  }
+  ]
 }
