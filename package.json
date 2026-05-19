@@ -19,11 +19,14 @@
   "dependencies": {
     "moment": "^2.30.1"
   },
-  "author": "Fred de Gier",
+  "author": {
+    "name": "Jeroen de Gouw",
+    "url": "https://github.com/jdegouw"
+  },
   "contributors": [
+    "Fred de Gier",
     "Vladimír Aubrecht",
-    "Michal Snitily",
-    "Jeroen de Gouw"
+    "Michal Snitily"
   ],
   "repository": {
     "type": "git",
@@ -38,5 +41,8 @@
     "config-helper.js",
     "sample-config.json",
     "config.schema.json"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }
