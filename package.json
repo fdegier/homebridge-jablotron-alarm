@@ -1,6 +1,6 @@
 {
   "name": "homebridge-jablotron",
-  "version": "3.1.4",
+  "version": "3.2.0",
   "description": "Control your Jablotron alarm system from your iOS device using HomeKit and Homebridge.",
   "license": "MIT",
   "homepage": "https://github.com/fdegier/homebridge-jablotron-alarm#readme",
@@ -13,8 +13,8 @@
     "homekit"
   ],
   "engines": {
-    "node": ">=0.12.0",
-    "homebridge": ">=0.2.0"
+    "node": "^22.12.0 || ^24.0.0",
+    "homebridge": "^1.6.0 || ^2.0.0"
   },
   "dependencies": {
     "moment": ">=2.11.2"
@@ -39,9 +39,11 @@
     "config.schema.json"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run verify",
+    "verify": "node scripts/verify-hb2.js"
   },
   "devDependencies": {
+    "hap-nodejs": "^1.0.0",
     "jest": "^29.7.0"
   }
 }
