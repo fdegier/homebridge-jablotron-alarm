@@ -19,5 +19,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
 
-      - run: npx --yes npm@11 publish
+      - run: npm --version
+
+      - run: npm publish
