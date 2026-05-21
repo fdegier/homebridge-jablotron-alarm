@@ -18,8 +18,6 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
 
-      - run: npm install -g npm@11
-
-      - run: npm publish
+      - run: npx --yes npm@11 publish
